@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Aim: TODO
+ * Aim: 工具类
  * Date: 2018/11/23 10:59
  * Company: www.dtstack.com
  * Author milu
@@ -66,6 +66,7 @@ public class Utils {
 
     /**
      * 置入内存队列
+     * 原来这是开发给logstash使用，现在抽离为一个单独的组件，所以注释掉
      * @param message
      */
     public static void pushToInput(Message message){

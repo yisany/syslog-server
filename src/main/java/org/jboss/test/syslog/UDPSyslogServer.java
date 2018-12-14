@@ -33,9 +33,7 @@ import org.productivity.java.syslog4j.server.SyslogServerEventIF;
 import org.productivity.java.syslog4j.server.impl.net.udp.UDPNetSyslogServer;
 
 /**
- * UDP syslog server implementation for syslog4j.
- *
- * @author Josef Cacek
+ * 用于UDP服务处理
  */
 public class UDPSyslogServer extends UDPNetSyslogServer {
 

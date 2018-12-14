@@ -26,9 +26,6 @@ import org.productivity.java.syslog4j.server.impl.net.udp.UDPNetSyslogServerConf
 
 /**
  * UDP Syslog服务器配置
- * Configuration class for {@link UDPSyslogServer}.
- *
- * @author Josef Cacek
  */
 public class UDPSyslogServerConfig extends UDPNetSyslogServerConfig {
 

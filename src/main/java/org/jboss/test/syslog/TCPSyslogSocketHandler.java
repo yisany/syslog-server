@@ -33,10 +33,7 @@ import org.productivity.java.syslog4j.server.SyslogServerEventIF;
 import org.productivity.java.syslog4j.server.SyslogServerIF;
 
 /**
- * Socket handler for TCP and TLS syslog server implementations. It handles
- * automatically Octet Counting/Non-Transparent-Framing switch.
- *
- * @author Josef Cacek
+ * 用于TCP和TLS服务的Socket处理
  */
 public class TCPSyslogSocketHandler implements Runnable {
 
@@ -117,12 +114,6 @@ public class TCPSyslogSocketHandler implements Runnable {
 		}
 	}
 
-	/**
-	 * Parses {@link Rfc5424SyslogEvent} instance from given raw message bytes
-	 * and sends it to event handlers.
-	 *
-	 * @param rawMsg
-	 */
 	private void handleSyslogMessage(final byte[] rawMsg) {
 //		final SyslogServerEventIF event = new Rfc5424SyslogEvent(rawMsg, 0, rawMsg.length);
 //		System.out.println(">>> Syslog message came: " + event);
