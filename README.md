@@ -1,44 +1,50 @@
-# Simple Syslog Server
+# Syslog日志接收服务器
 
-All-in-one implementation of [RFC-5424 Syslog Protocol](http://tools.ietf.org/html/rfc5424) for testing purposes.
+该项目基于 [syslog4j](http://www.syslog4j.org/) 实现
 
-The server is based on [syslog4j](http://www.syslog4j.org/) library.
-
-There are 3 implemented server configurations:
+有三种协议可供选择：
 
  * UDP
  * TCP
- * TLS (uses self-signed certificate) 
+ * TLS (使用自签名证书) 
 
-The syslog server listens on **port 9898** in all configurations.
+Syslog服务器监听 **port 9898** 端口
 
-## Usage
+## 使用方法
+
+使用maven打包成jar包，然后运行：
 
     java -jar simple-syslog-server.jar [udp|tcp|tls]
 
-If no argument is provided, then the **"tls"** configuration is started.
+如果未提供后面的协议参数，默认使用 **"udp"** 启动监听。
 
-### Output
+## 发送方配置
 
-Console then contain output similar to:
+```bash
+#! /bin/bash
+
+cp /etc/rsyslog.conf /etc/rsyslog.conf.backup99
+
+file="/etc/rsyslog.conf"
+# 服务端ip
+address=""192.168.92.1""
+# 接收端口
+port="9898"
+# 协议方式
+protocol=""@""
+# 自定义模板
+content1="\$template UniqueFormat,\"test %syslogpriority% %timestamp% %hostname% %syslogtag% %msg%\""
+content2="*.*  ${protocol}${address}:${port};UniqueFormat"
+
+echo "$content1" >> $file
+echo "$content2" >> $file
+
+systemctl restart rsyslog.service
+
 
 ```
-Simple syslog server (RFC-5424)
-Usage:
-  java -jar syslog-server.jar [protocol]
 
-Possible protocols: udp, tcp, tls
-
-No protocol provided. Defaulting to tls
-Starting Simple Syslog Server
-Protocol:     tls
-Bind address: 0.0.0.0
-Port:         9898
-Creating Syslog server socket
-Handling Syslog client /10.40.4.198
->>> Syslog message came: Rfc5424SyslogEvent [prioVersion=<12>1, facility=1, level=4, version=1, timestamp=2014-010-22T12:15:48.952+02:00, host=my-nb, appName=Test, procId=11119, msgId=-, structuredData=-, message=Message one]
->>> Syslog message came: Rfc5424SyslogEvent [prioVersion=<12>1, facility=1, level=4, version=1, timestamp=2014-010-22T12:15:52.039+02:00, host=my-nb, appName=Test, procId=11119, msgId=-, structuredData=-, message=Message two]
-```
+上面是一个`rsyslog.conf`的配置脚本，可以自己修改内容。后面会再开放出一个专门的服务，可以用于自动生成脚本。
 
 ## License
 
