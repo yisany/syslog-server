@@ -1,4 +1,4 @@
-package org.yis.syslog;
+package org.yis.syslog4j_syslog;
 
 import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServer;
 

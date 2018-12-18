@@ -19,10 +19,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.yis.syslog;
+package org.yis.syslog4j_syslog;
 
 import org.apache.commons.io.IOUtils;
 import org.productivity.java.syslog4j.server.SyslogServerIF;
+import org.yis.Message;
+import org.yis.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

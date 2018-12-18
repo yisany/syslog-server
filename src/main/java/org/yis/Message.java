@@ -1,4 +1,4 @@
-package org.yis.syslog;
+package org.yis;
 
 import java.net.InetAddress;
 
