@@ -19,7 +19,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.test.syslog;
+package org.yis.syslog;
+
+import org.apache.commons.io.IOUtils;
+import org.productivity.java.syslog4j.server.SyslogServerIF;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,10 +30,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.Socket;
 import java.util.Set;
-
-import org.apache.commons.io.IOUtils;
-import org.productivity.java.syslog4j.server.SyslogServerEventIF;
-import org.productivity.java.syslog4j.server.SyslogServerIF;
 
 /**
  * 用于TCP和TLS服务的Socket处理

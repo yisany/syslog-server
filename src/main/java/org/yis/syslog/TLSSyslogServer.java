@@ -1,16 +1,15 @@
-package org.jboss.test.syslog;
+package org.yis.syslog;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
+import org.apache.commons.io.IOUtils;
+import org.productivity.java.syslog4j.SyslogRuntimeException;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-
-import org.apache.commons.io.IOUtils;
-import org.productivity.java.syslog4j.SyslogRuntimeException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
 
 /**
  * 用于TLC的服务

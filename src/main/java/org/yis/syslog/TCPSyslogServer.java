@@ -1,10 +1,10 @@
-package org.jboss.test.syslog;
+package org.yis.syslog;
+
+import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServer;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Collections;
-
-import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServer;
 
 /**
  * Aim:  关于TCP的Syslog4j服务

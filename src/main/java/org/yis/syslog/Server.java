@@ -1,10 +1,10 @@
-package org.jboss.test.syslog;
-
-import java.net.UnknownHostException;
+package org.yis.syslog;
 
 import org.productivity.java.syslog4j.SyslogRuntimeException;
 import org.productivity.java.syslog4j.server.SyslogServer;
 import org.productivity.java.syslog4j.server.SyslogServerConfigIF;
+
+import java.net.UnknownHostException;
 
 /**
  * Aim:  Server服务主入口

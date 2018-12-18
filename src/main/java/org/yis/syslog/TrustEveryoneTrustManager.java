@@ -20,12 +20,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.test.syslog;
-
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+package org.yis.syslog;
 
 import javax.net.ssl.X509TrustManager;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 /**
  * Dummy trust manager, which trusts everyone.
@@ -39,8 +38,8 @@ public class TrustEveryoneTrustManager implements X509TrustManager {
 	/**
 	 * Trust all client certificates.
 	 *
-	 * @see javax.net.ssl.X509TrustManager#checkClientTrusted(java.security.cert.X509Certificate[],
-	 *      java.lang.String)
+	 * @see X509TrustManager#checkClientTrusted(X509Certificate[],
+	 *      String)
 	 */
 	@Override
 	public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
@@ -50,8 +49,8 @@ public class TrustEveryoneTrustManager implements X509TrustManager {
 	/**
 	 * Trust all server certificates.
 	 *
-	 * @see javax.net.ssl.X509TrustManager#checkServerTrusted(java.security.cert.X509Certificate[],
-	 *      java.lang.String)
+	 * @see X509TrustManager#checkServerTrusted(X509Certificate[],
+	 *      String)
 	 */
 	@Override
 	public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
@@ -61,7 +60,7 @@ public class TrustEveryoneTrustManager implements X509TrustManager {
 	/**
 	 * Returns empty array.
 	 *
-	 * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
+	 * @see X509TrustManager#getAcceptedIssuers()
 	 */
 	@Override
 	public X509Certificate[] getAcceptedIssuers() {

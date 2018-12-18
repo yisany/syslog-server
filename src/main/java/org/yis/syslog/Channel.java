@@ -1,4 +1,4 @@
-package org.jboss.test.syslog;
+package org.yis.syslog;
 
 /**
  * Aim: 静态提供BaseInput入口

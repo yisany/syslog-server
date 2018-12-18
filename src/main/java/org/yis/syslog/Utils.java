@@ -1,6 +1,5 @@
-package org.jboss.test.syslog;
+package org.yis.syslog;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.util.HashMap;

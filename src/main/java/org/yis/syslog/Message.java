@@ -1,4 +1,4 @@
-package org.jboss.test.syslog;
+package org.yis.syslog;
 
 import java.net.InetAddress;
 
