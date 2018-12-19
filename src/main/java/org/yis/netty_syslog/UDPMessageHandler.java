@@ -30,7 +30,10 @@ public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
 
         //信息初始化
         //TODO 这里还存在问题，ip和port无法获取
-        Message message = Utils.initMessage(InetAddress.getLocalHost(), 9898, body);
+        InetAddress ip = msg.sender().getAddress();
+        int port = msg.sender().getPort();
+        Message message = Utils.initMessage(ip, port, body);
+        System.out.println(body);
         System.out.println(">>> message came: "+ message.toString());
 
         //加入到jlogstash-input还要置入Input内存队列

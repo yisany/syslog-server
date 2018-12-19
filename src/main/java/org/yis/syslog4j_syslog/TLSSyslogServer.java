@@ -2,6 +2,7 @@ package org.yis.syslog4j_syslog;
 
 import org.apache.commons.io.IOUtils;
 import org.productivity.java.syslog4j.SyslogRuntimeException;
+import org.yis.TrustEveryoneTrustManager;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
@@ -27,6 +28,7 @@ public class TLSSyslogServer extends TCPSyslogServer {
 	 */
 	@Override
 	public void initialize() throws SyslogRuntimeException {
+		System.out.println("TLSSyslogServer.initalize");
 		super.initialize();
 
 		try {

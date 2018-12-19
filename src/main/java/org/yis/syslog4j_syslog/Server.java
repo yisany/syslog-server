@@ -23,7 +23,7 @@ public class Server {
 		SyslogServer.shutdown();
 
 		//设置以哪种方式接收，默认为udp
-		Protocol protocol = Protocol.name("udp");
+		Protocol protocol = Protocol.name("tls");
 
 		//配置初始化
 		SyslogServerConfigIF configIF = ConfigBuilder.newBuilder(protocol).build();

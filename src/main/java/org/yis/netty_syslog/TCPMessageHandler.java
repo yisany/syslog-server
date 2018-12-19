@@ -6,6 +6,7 @@ import org.yis.Message;
 import org.yis.Utils;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 /**
  * Aim: TCP连接信息处理
@@ -23,7 +24,11 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
 
         //信息初始化
         //TODO 这里还存在问题，ip和port无法获取
-        Message message = Utils.initMessage(InetAddress.getLocalHost(), 9898, body);
+        InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
+        InetAddress ip = insocket.getAddress();
+        int port = insocket.getPort();
+
+        Message message = Utils.initMessage(ip, port, body);
         System.out.println(">>> message came: "+ message.toString());
 
         //加入到jlogstash-input还要置入Input内存队列
