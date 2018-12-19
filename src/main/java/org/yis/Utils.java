@@ -1,7 +1,14 @@
 package org.yis;
 
+import org.apache.commons.io.IOUtils;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
+import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +33,7 @@ public class Utils {
         message.setIpAddress(address);
         message.setPort(port);
 
-        //消息msg分割
+        //消息message分割
         String[] str = mess.split(" ");
         //设置unique
         message.setUnique(str[0]);
@@ -50,7 +57,7 @@ public class Utils {
         message.setHost(str[5]);
         //设置应用名
         message.setProcess(str[6]);
-        //设置msg
+        //设置message
         buffer = new StringBuffer();
         for (int i = 7; i < str.length; i ++){
             if (i != str.length){
@@ -59,7 +66,7 @@ public class Utils {
                 buffer.append(str[i]);
             }
         }
-        message.setMsg(buffer.toString());
+        message.setMessage(buffer.toString());
         return message;
     }
 

@@ -18,7 +18,7 @@ public class Message {
     private String timeStamp;
     private String host;
     private String process;
-    private String msg;
+    private String message;
 
     @Override
     public String toString() {
@@ -30,7 +30,7 @@ public class Message {
                 ", timeStamp='" + timeStamp + '\'' +
                 ", host='" + host + '\'' +
                 ", process='" + process + '\'' +
-                ", msg='" + msg + '\'' +
+                ", message='" + message + '\'' +
                 '}';
     }
 
@@ -90,15 +90,15 @@ public class Message {
         this.process = process;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getmessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public Message(InetAddress ipAddress, int port, String unique, String pri, String timeStamp, String host, String process, String msg) {
+    public Message(InetAddress ipAddress, int port, String unique, String pri, String timeStamp, String host, String process, String message) {
         this.ipAddress = ipAddress;
         this.port = port;
         this.unique = unique;
@@ -106,7 +106,7 @@ public class Message {
         this.timeStamp = timeStamp;
         this.host = host;
         this.process = process;
-        this.msg = msg;
+        this.message = message;
     }
 
     public Message() {

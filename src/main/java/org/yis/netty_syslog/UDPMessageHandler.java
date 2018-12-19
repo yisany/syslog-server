@@ -19,24 +19,22 @@ import java.net.InetAddress;
 public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-        ByteBuf buf = msg.copy().content();
+    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket message) throws Exception {
+        ByteBuf buf = message.copy().content();
         byte[] req = new byte[buf.readableBytes()];
         buf.readBytes(req);
         String body = new String(req, "UTF-8");
 
-//        String body = msg.content().toString();
+//        String body = message.content().toString();
 //        System.out.println("message coming >> " + body);
 
         //信息初始化
-        //TODO 这里还存在问题，ip和port无法获取
-        InetAddress ip = msg.sender().getAddress();
-        int port = msg.sender().getPort();
-        Message message = Utils.initMessage(ip, port, body);
-        System.out.println(body);
+        InetAddress ip = message.sender().getAddress();
+        int port = message.sender().getPort();
+        Message mmsg = Utils.initMessage(ip, port, body);
         System.out.println(">>> message came: "+ message.toString());
 
         //加入到jlogstash-input还要置入Input内存队列
-        Utils.pushToInput(message);
+        Utils.pushToInput(mmsg);
     }
 }

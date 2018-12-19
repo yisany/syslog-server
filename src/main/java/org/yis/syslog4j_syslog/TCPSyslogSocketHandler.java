@@ -115,12 +115,12 @@ public class TCPSyslogSocketHandler implements Runnable {
 		}
 	}
 
-	private void handleSyslogMessage(final byte[] rawMsg) {
-//		final SyslogServerEventIF event = new Rfc5424SyslogEvent(rawMsg, 0, rawMsg.length);
+	private void handleSyslogMessage(final byte[] rawmessage) {
+//		final SyslogServerEventIF event = new Rfc5424SyslogEvent(rawmessage, 0, rawmessage.length);
 //		System.out.println(">>> Syslog message came: " + event);
 
 		//DatagramPacket：此类表示数据报包
-		final DatagramPacket dp = new DatagramPacket(rawMsg, rawMsg.length);
+		final DatagramPacket dp = new DatagramPacket(rawmessage, rawmessage.length);
 		//传入一个数据报包，用来接收数据
 		String mess = new String(dp.getData(),0, dp.getLength());
 		//信息初始化

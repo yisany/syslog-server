@@ -33,7 +33,7 @@ port="9898"
 # 协议方式
 protocol=""@""
 # 自定义模板
-content1="\$template UniqueFormat,\"test %syslogpriority% %timestamp% %hostname% %syslogtag% %msg%\""
+content1="\$template UniqueFormat,\"test %syslogpriority% %timestamp% %hostname% %syslogtag% %message%\""
 content2="*.*  ${protocol}${address}:${port};UniqueFormat"
 
 echo "$content1" >> $file

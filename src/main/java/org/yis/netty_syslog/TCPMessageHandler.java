@@ -1,5 +1,6 @@
 package org.yis.netty_syslog;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.yis.Message;
@@ -15,23 +16,23 @@ import java.net.InetSocketAddress;
  * Author milu
  * Version: v1.0.0
  */
+@ChannelHandler.Sharable
 public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        String body = (String)msg;
+    public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
+        String body = (String)message;
 //        System.out.println("message coming >> " + body);
 
         //信息初始化
-        //TODO 这里还存在问题，ip和port无法获取
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         InetAddress ip = insocket.getAddress();
         int port = insocket.getPort();
 
-        Message message = Utils.initMessage(ip, port, body);
+        Message mmsg = Utils.initMessage(ip, port, body);
         System.out.println(">>> message came: "+ message.toString());
 
         //加入到jlogstash-input还要置入Input内存队列
-        Utils.pushToInput(message);
+        Utils.pushToInput(mmsg);
     }
 }
