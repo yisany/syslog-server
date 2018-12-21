@@ -1,6 +1,6 @@
 # Syslog日志接收服务器
 
-该项目基于 [syslog4j](http://www.syslog4j.org/) 实现
+该项目基于 [syslog4j](http://www.syslog4j.org/) 和 [simple-syslog-server](https://github.com/kwart/simple-syslog-server) 实现
 
 有三种协议可供选择：
 
