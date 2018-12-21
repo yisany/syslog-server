@@ -32,7 +32,7 @@ public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
         InetAddress ip = message.sender().getAddress();
         int port = message.sender().getPort();
         Message mmsg = Utils.initMessage(ip, port, body);
-        System.out.println(">>> message came: "+ message.toString());
+        System.out.println(">>> message came: "+ mmsg.toString());
 
         //加入到jlogstash-input还要置入Input内存队列
         Utils.pushToInput(mmsg);
