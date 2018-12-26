@@ -29,33 +29,42 @@ java -jar simple-syslog-server.jar [udp|tcp|tls]
 
 <br>
 
-## 发送方配置
+## 发送方配置 Client
+
+### 自动脚本配置
+
+可以使用shell文件夹下的`syslog_template.sh`模板，填入自己的内容，会进行一系列的自检，通过后便会开始配置rsyslog服务
+
+```bash
+CONF_FILE="/etc/rsyslog.d/dtstack.conf"
+# 填入接收服务器的地址
+SYSLOG_SERVER_HOST=
+PORT="9898"
+# 填入协议方式：udp,tcp,tls
+PROTOCOL=
+# 填入server.crt文件所在路径
+URL_PEM=
+```
+
+### 手动配置
 
 #### udp和tcp
 
-下面是一个`rsyslog.conf`的配置脚本，可以自己修改内容。后面会再开放出一个专门的服务，可以用于自动生成脚本。
+- 在`/etc/rsyslog.d/`下新建文件user.conf
 
-```bash
-#! /bin/bash
+  ```bash
+  touch user.conf
+  ```
 
-file="/etc/rsyslog.d/user.conf"
-# 填写你自己的服务端ip
-address="192.168.92.1"
-port="9898"
-# udp为@，tcp为@@
-protocol="@"
-# 这边定义的是发送的格式，可以根据你自己的需求来定义
-content1="\$template UniqueFormat,\"unique %syslogpriority% %timestamp% %hostname% %syslogtag% %msg%\""
-content2="*.*  ${protocol}${address}:${port};UniqueFormat"
+- 编辑文件
 
-touch $file
-
-echo "$content1" >> $file
-echo "$content2" >> $file
-
-systemctl restart rsyslog.service
-
-```
+  ```bash
+  $template UniqueFormat,"unique %syslogpriority% %timestamp% %hostname% %syslogtag% %msg%
+  # ip为服务端ip，确保两台机器可以ping通
+  # udp为一个@，tcp为两个@
+  #*.*  @ip:9898;UniqueFormat
+  *.*  @@ip:9898;UniqueFormat
+  ```
 
 ### tls
 
@@ -67,28 +76,31 @@ tls需要完成一下几个步骤：
    sudo yum install -y rsyslog-gnutls
    ```
 
-2. 生成.pem文件，server.crt在项目中可以找到
+2. 移动 server.crt 文件到指定位置
 
    ```bash
-   cp server.crt /data
-   cd /data
-   openssl x509 -inform DER -in yourdownloaded.crt -out outcert.pem -text
+   mkdir /etc/rsyslog.d/pem
+   mv server.crt /etc/rsyslog.d/pem
    ```
 
-3. 配置 rsyslog.conf 
+3. 新建 user.conf
+
+   ```bash
+   touch /etc/rsyslog.d/user.conf
+   ```
+
+4. 编辑文件
 
    ```bash
    $DefaultNetstreamDriver gtls
    
-   $DefaultNetstreamDriverCAFile /data/ca.pem
-   $DefaultNetstreamDriverCertFile /data/outcert.pem
-   $DefaultNetstreamDriverKeyFile /data/ca-key.pem
+   $DefaultNetstreamDriverCAFile /etc/rsyslog.d/pem/server.crt
    
    $ActionSendStreamDriverAuthMode anon
    $ActionSendStreamDriverMode 1
    
    $template myFormat,"unique %syslogpriority% %timestamp% %hostname% %syslogtag% %msg%"
-   *.* @@192.168.92.1:9898;myFormat
+   *.* @@ip:9898;myFormat
    ```
 
 <br>
