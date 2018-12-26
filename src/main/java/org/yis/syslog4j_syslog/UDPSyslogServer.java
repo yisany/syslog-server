@@ -75,7 +75,7 @@ public class UDPSyslogServer extends UDPNetSyslogServer {
 				//System.out.println(">>> init mess came: "+ mess);
 				//信息初始化
 				Message message = Utils.initMessage(dp.getAddress(), dp.getPort(), mess);
-				System.out.println(mess);
+				// System.out.println(mess);
 				System.out.println(message.toString());
 
 				//加入到jlogstash-input还要置入Input内存队列

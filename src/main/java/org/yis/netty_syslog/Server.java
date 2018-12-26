@@ -9,8 +9,9 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.*;
 import org.apache.commons.io.IOUtils;
 import org.yis.TrustEveryoneTrustManager;
 
@@ -38,14 +39,10 @@ public class Server {
     private EventLoopGroup workerGroup;
 
     private SSLContext sslContext;
-    private SSLEngine sslEngine;
-    //是否存在ssl
-    private boolean sslEnable = false;
 
     public Server(int port, String protocol) {
         this.port = port;
         this.protocol = protocol;
-        //this.sslContext = getSslContext();
     }
 
     /**
@@ -66,26 +63,13 @@ public class Server {
             System.out.println("This is Syslog.tls");
             SSLContext sslContext = getSslContext();
 
-            // 将SslEnable设置为true
-            if (this.sslContext != null){
-                sslEnable = true;
-            }
+            JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
 
-            sslEngine = sslContext.createSSLEngine();
-            // 是否使用客户端模式
-            sslEngine.setUseClientMode(false);
-            // 是否需要验证客户端
-            sslEngine.setNeedClientAuth(false);
-
-            tcp(port);
+            tls(port, context);
         } else {
             System.out.println("输入有误 ！！！");
             System.exit(-1);
         }
-    }
-
-    private boolean isSslEnable(){
-        return this.sslEnable;
     }
 
     /**
@@ -151,7 +135,7 @@ public class Server {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new SyslogTCPInitializer(this ))
+                    .childHandler(new SyslogTCPInitializer())
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture f = b.bind(port).sync();
@@ -164,30 +148,54 @@ public class Server {
         }
     }
 
+    /**
+     * tls
+     * @param port
+     */
+    private void tls(int port, JdkSslContext context) {
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap b = new ServerBootstrap();
+            b.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    .childHandler(new SyslogTLSInitializer(context))
+                    .option(ChannelOption.SO_BACKLOG, 128);
+            ChannelFuture f = b.bind(port).sync();
+            f.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     private class SyslogTCPInitializer extends ChannelInitializer<SocketChannel> {
 
-        private Server server;
+        @Override
+        protected void initChannel(SocketChannel ch) throws Exception {
+            ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
+            ch.pipeline().addLast(new StringDecoder());
+            ch.pipeline().addLast(new TCPMessageHandler());
+        }
+    }
 
-        private SslContext context;
+    private class SyslogTLSInitializer extends ChannelInitializer<SocketChannel> {
 
-        public SyslogTCPInitializer(Server server) {
-            this.server = server;
+        private JdkSslContext context;
+
+        public SyslogTLSInitializer(JdkSslContext context) {
+            this.context = context;
         }
 
         @Override
         protected void initChannel(SocketChannel ch) throws Exception {
-            //判断是否存在ssl
-            if (server.isSslEnable()){
-//                SSLEngine engine = context.newEngine(ch.alloc());
-//                engine.setUseClientMode(false);
-//                ch.pipeline().addFirst(new SslHandler(engine));
-                ch.pipeline().addFirst(new SslHandler(server.sslEngine));
-            }
+            SSLEngine sslEngine = context.newEngine(ch.alloc());
+            ch.pipeline().addFirst("ssl", new SslHandler(sslEngine));
 
             ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
             ch.pipeline().addLast(new StringDecoder());
             ch.pipeline().addLast(new TCPMessageHandler());
+
         }
     }
 

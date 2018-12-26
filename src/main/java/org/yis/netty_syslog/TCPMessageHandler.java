@@ -22,7 +22,6 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
         String body = (String)message;
-        System.out.println("message coming >> " + body);
 
         //信息初始化
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();

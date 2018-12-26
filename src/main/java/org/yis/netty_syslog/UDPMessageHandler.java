@@ -25,9 +25,6 @@ public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
         buf.readBytes(req);
         String body = new String(req, "UTF-8");
 
-//        String body = message.content().toString();
-//        System.out.println("message coming >> " + body);
-
         //信息初始化
         InetAddress ip = message.sender().getAddress();
         int port = message.sender().getPort();

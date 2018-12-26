@@ -33,7 +33,7 @@ public class TCPSyslogServer extends TCPNetSyslogServer {
 		while (!this.shutdown) {
 			try {
 				final Socket socket = this.serverSocket.accept();
-				System.out.println("Handling Syslog client " + socket.getInetAddress());
+				// System.out.println("Handling Syslog client " + socket.getInetAddress());
 				new Thread(new TCPSyslogSocketHandler(this.sockets, this, socket)).start();
 			} catch (IOException e) {
 				e.printStackTrace();
