@@ -30,7 +30,7 @@ public class Utils {
      */
     public static Message initMessage(InetAddress address, int port, String mess) {
         Message message = new Message();
-        message.setIpAddress(address);
+        message.setIpAddress(address.toString().substring(1));
         message.setPort(port);
 
         //消息message分割

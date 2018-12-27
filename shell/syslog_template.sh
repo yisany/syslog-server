@@ -107,7 +107,7 @@ writeTLS()
   echo "$contentSend" >> $CONF_FILE
 }
 
-# 检查dtstack.coonf文件是否已经存在
+# 检查dtstack.conf文件是否已经存在
 rmFile()
 {
   if [ `ls /etc/rsyslog.d | grep dtstack.conf |wc -l`  == 1 ];then

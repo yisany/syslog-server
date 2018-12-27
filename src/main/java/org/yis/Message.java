@@ -11,7 +11,7 @@ import java.net.InetAddress;
  */
 public class Message {
 
-    private InetAddress ipAddress;
+    private String ipAddress;
     private int port;
     private String unique;
     private String pri;
@@ -34,11 +34,11 @@ public class Message {
                 '}';
     }
 
-    public InetAddress getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 
-    public void setIpAddress(InetAddress ipAddress) {
+    public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
@@ -98,7 +98,7 @@ public class Message {
         this.message = message;
     }
 
-    public Message(InetAddress ipAddress, int port, String unique, String pri, String timeStamp, String host, String process, String message) {
+    public Message(String ipAddress, int port, String unique, String pri, String timeStamp, String host, String process, String message) {
         this.ipAddress = ipAddress;
         this.port = port;
         this.unique = unique;
