@@ -34,21 +34,12 @@ public class Utils {
         message.setPort(port);
 
         //消息message分割
-        String[] str = mess.split(" ");
+        String[] str = mess.split("\\s+");
         //设置unique
         message.setUnique(str[0]);
         //设置优先级
         message.setPri(str[1]);
-        /**
-         * 这里有一个小地方需要注意：
-         * 日期如果为两位数，如11，28，切分正确
-         * 如果为一位数，如6，2，会多出来一个空格
-         */
-        if ("".equals(str[3])){
-            for (int i = 3; i < str.length - 1; i++){
-                str[i] = str[i + 1];
-            }
-        }
+
         //设置时间戳
         StringBuffer buffer = new StringBuffer();
         buffer.append(str[2]).append(" ").append(str[3]).append(" ").append(str[4]);

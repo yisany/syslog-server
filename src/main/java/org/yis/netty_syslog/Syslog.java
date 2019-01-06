@@ -11,7 +11,7 @@ public class Syslog {
 
     public static final int SYSLOG_PORT = 9898;
 
-    public static final String SYSLOG_PROTOCOL = "tls";
+    public static final String SYSLOG_PROTOCOL = "udp";
 
     public static void main(String[] args) {
         int port = SYSLOG_PORT;
