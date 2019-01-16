@@ -47,7 +47,7 @@ public class Utils {
         //设置主机名
         message.setHost(str[5]);
         //设置应用名
-        message.setProcess(str[6]);
+        message.setProcess(str[6].substring(0, str[6].length() - 1));
         //设置message
         buffer = new StringBuffer();
         for (int i = 7; i < str.length; i ++){

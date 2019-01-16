@@ -24,6 +24,7 @@ public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
         byte[] req = new byte[buf.readableBytes()];
         buf.readBytes(req);
         String body = new String(req, "UTF-8");
+        System.out.println("Init cmae: " + body);
         //信息初始化
         InetAddress ip = message.sender().getAddress();
         int port = message.sender().getPort();
