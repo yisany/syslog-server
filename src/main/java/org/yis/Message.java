@@ -1,7 +1,5 @@
 package org.yis;
 
-import java.util.Date;
-
 /**
  * Aim: Message信息封装
  * Date: 2018/11/22 20:43

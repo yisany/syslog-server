@@ -24,8 +24,7 @@ import java.util.regex.Pattern;
  */
 public class Utils {
 
-    // 正则
-    final static Pattern syslogRegex = Pattern.compile("^\\S+\\s{1}\\d+\\s\\S+\\s{1,2}\\d+\\s\\d+:\\d+:\\d+\\s.*$");
+
 
     /**
      * 日志消息使用Message进行封装
@@ -38,11 +37,12 @@ public class Utils {
         Message message = new Message();
         message.setIpAddress(address.toString().substring(1));
         message.setPort(port);
-        Matcher m = syslogRegex.matcher(msg);
+        Matcher m = Const.getRegex().matcher(msg);
         if (m.find()) {
             String[] str = msg.split("\\s+");
             message.setUnique(str[0]);
             message.setPri(Integer.parseInt(str[1]));
+            // TODO 日期转换
             StringBuffer buffer = new StringBuffer();
             buffer.append(str[2]).append(" ").append(str[3]).append(" ").append(str[4]);
             message.setTimeStamp(buffer.toString());

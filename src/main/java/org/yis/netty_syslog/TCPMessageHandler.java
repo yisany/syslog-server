@@ -28,10 +28,8 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
         InetAddress ip = insocket.getAddress();
         int port = insocket.getPort();
 
-        System.out.println("msg: " + body + "ip: " + ip + "port: " + port);
-
-//        Message mmsg = Utils.initMessage(ip, port, body);
-//        System.out.println(">>> message came: "+ mmsg.toString());
+        Message mmsg = Utils.initMessage(ip, port, body);
+        System.out.println(">>> message came: "+ mmsg.toString());
 
         //加入到jlogstash-input还要置入Input内存队列
 //        Utils.pushToInput(mmsg);

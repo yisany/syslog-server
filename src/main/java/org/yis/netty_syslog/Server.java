@@ -49,27 +49,39 @@ public class Server {
      * 监听服务
      */
     public void listen() {
-        System.out.println("Server: " + protocol);
-        if (protocol.equalsIgnoreCase("udp")){
-            // 调用udp服务
-            System.out.println("This is Syslog.udp");
-            udp(port);
-        } else if (protocol.equalsIgnoreCase("tcp")){
-            // 调用tcp服务
-            System.out.println("This is Syslog.tcp");
-            tcp(port);
-        } else if(protocol.equalsIgnoreCase("tls")){
-            // 调用tls服务
-            System.out.println("This is Syslog.tls");
-            SSLContext sslContext = getSslContext();
-
-            JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
-
-            tls(port, context);
-        } else {
-            System.out.println("输入有误 ！！！");
-            System.exit(-1);
+        switch (protocol.toLowerCase()){
+            case "udp":
+                udp(port);
+                break;
+            case "tcp":
+                tcp(port);
+                break;
+            case "tls":
+                SSLContext sslContext = getSslContext();
+                JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
+                tls(port, context);
+                break;
+            default:
+                System.out.println("输入有误 ！！！");
+                System.exit(-1);
         }
+//        if (protocol.equalsIgnoreCase("udp")){
+//            // 调用udp服务
+//            udp(port);
+//        } else if (protocol.equalsIgnoreCase("tcp")){
+//            // 调用tcp服务
+//            tcp(port);
+//        } else if(protocol.equalsIgnoreCase("tls")){
+//            // 调用tls服务
+//            SSLContext sslContext = getSslContext();
+//
+//            JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
+//
+//            tls(port, context);
+//        } else {
+//            System.out.println("输入有误 ！！！");
+//            System.exit(-1);
+//        }
     }
 
     /**
