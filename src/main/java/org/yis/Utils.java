@@ -1,5 +1,6 @@
 package org.yis;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import org.apache.commons.io.IOUtils;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -11,6 +12,8 @@ import java.net.InetAddress;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Aim: 工具类
@@ -21,43 +24,39 @@ import java.util.Map;
  */
 public class Utils {
 
+    // 正则
+    final static Pattern syslogRegex = Pattern.compile("^\\S+\\s{1}\\d+\\s\\S+\\s{1,2}\\d+\\s\\d+:\\d+:\\d+\\s.*$");
+
     /**
      * 日志消息使用Message进行封装
      * @param address ip地址
      * @param port 端口号
-     * @param mess 日志信息
+     * @param msg 日志信息
      * @return message
      */
-    public static Message initMessage(InetAddress address, int port, String mess) {
+    public static Message initMessage(InetAddress address, int port, String msg) {
         Message message = new Message();
         message.setIpAddress(address.toString().substring(1));
         message.setPort(port);
-
-        //消息message分割
-        String[] str = mess.split("\\s+");
-        //设置unique
-        message.setUnique(str[0]);
-        //设置优先级
-        message.setPri(str[1]);
-
-        //设置时间戳
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(str[2]).append(" ").append(str[3]).append(" ").append(str[4]);
-        message.setTimeStamp(buffer.toString());
-        //设置主机名
-        message.setHost(str[5]);
-        //设置应用名
-        message.setProcess(str[6].substring(0, str[6].length() - 1));
-        //设置message
-        buffer = new StringBuffer();
-        for (int i = 7; i < str.length; i ++){
-            if (i != str.length){
-                buffer.append(str[i]).append(" ");
-            }else {
-                buffer.append(str[i]);
-            }
+        Matcher m = syslogRegex.matcher(msg);
+        if (m.find()) {
+            String[] str = msg.split("\\s+");
+            message.setUnique(str[0]);
+            message.setPri(Integer.parseInt(str[1]));
+            StringBuffer buffer = new StringBuffer();
+            buffer.append(str[2]).append(" ").append(str[3]).append(" ").append(str[4]);
+            message.setTimeStamp(buffer.toString());
+            message.setHost(str[5]);
+            message.setProcessName(str[6].substring(0, str[6].length() - 1));
+            message.setMessage(msg);
+        } else {
+            message.setUnique("unknown");
+            message.setPri(0);
+            message.setTimeStamp("unknown");
+            message.setHost("unknown");
+            message.setProcessName("unknown");
+            message.setMessage(msg);
         }
-        message.setMessage(buffer.toString());
         return message;
     }
 

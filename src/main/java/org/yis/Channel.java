@@ -1,4 +1,6 @@
-package org.yis.syslog4j_syslog;
+package org.yis;
+
+import org.yis.syslog4j_syslog.Server;
 
 /**
  * Aim: 静态提供BaseInput入口

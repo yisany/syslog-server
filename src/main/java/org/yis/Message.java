@@ -1,6 +1,6 @@
 package org.yis;
 
-import java.net.InetAddress;
+import java.util.Date;
 
 /**
  * Aim: Message信息封装
@@ -14,22 +14,22 @@ public class Message {
     private String ipAddress;
     private int port;
     private String unique;
-    private String pri;
+    private int pri;
     private String timeStamp;
     private String host;
-    private String process;
+    private String processName;
     private String message;
 
     @Override
     public String toString() {
         return "Message{" +
-                "ipAddress=" + ipAddress +
+                "ipAddress='" + ipAddress + '\'' +
                 ", port=" + port +
                 ", unique='" + unique + '\'' +
-                ", pri='" + pri + '\'' +
+                ", pri=" + pri +
                 ", timeStamp='" + timeStamp + '\'' +
                 ", host='" + host + '\'' +
-                ", process='" + process + '\'' +
+                ", processName='" + processName + '\'' +
                 ", message='" + message + '\'' +
                 '}';
     }
@@ -58,11 +58,11 @@ public class Message {
         this.unique = unique;
     }
 
-    public String getPri() {
+    public int getPri() {
         return pri;
     }
 
-    public void setPri(String pri) {
+    public void setPri(int pri) {
         this.pri = pri;
     }
 
@@ -82,15 +82,15 @@ public class Message {
         this.host = host;
     }
 
-    public String getProcess() {
-        return process;
+    public String getProcessName() {
+        return processName;
     }
 
-    public void setProcess(String process) {
-        this.process = process;
+    public void setProcessName(String processName) {
+        this.processName = processName;
     }
 
-    public String getmessage() {
+    public String getMessage() {
         return message;
     }
 
@@ -98,14 +98,14 @@ public class Message {
         this.message = message;
     }
 
-    public Message(String ipAddress, int port, String unique, String pri, String timeStamp, String host, String process, String message) {
+    public Message(String ipAddress, int port, String unique, int pri, String timeStamp, String host, String processName, String message) {
         this.ipAddress = ipAddress;
         this.port = port;
         this.unique = unique;
         this.pri = pri;
         this.timeStamp = timeStamp;
         this.host = host;
-        this.process = process;
+        this.processName = processName;
         this.message = message;
     }
 
