@@ -1,39 +1,67 @@
 package org.yis.core.netty_syslog;
 
 import org.yis.entity.Const;
+import org.yis.export.Export;
+import org.yis.util.PropsUtil;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * Aim: 程序主入口
- * Date: 18-12-18 17:23
- * Company: www.dtstack.com
  * Author milu
  * Version: v1.0.0
  */
 public class Syslog {
 
-
-
     public static void main(String[] args){
         ExecutorService executor = Executors.newFixedThreadPool(5);
+        System.out.println("Syslog System Check");
+        System.out.println("Checking config...");
+        Map<String, Object> props = PropsUtil.getProps();
+        int pattern = checkConfig(props);
+        if (pattern != 0) {
+            Runnable export = new ExportThread(pattern, props);
+            executor.execute(export);
+        }
         System.out.println("Syslog_Monitor is running...");
-        Runnable worker1 = new WorkerRunn("udp", Const.SYSLOG_UDP_PORT);
-        Runnable worker2 = new WorkerRunn("tcp", Const.SYSLOG_TCP_PORT);
-        Runnable worker3 = new WorkerRunn("tls", Const.SYSLOG_TLS_PORT);
+        Runnable worker1 = new MonitorThread("udp", Const.SYSLOG_UDP_PORT);
+        Runnable worker2 = new MonitorThread("tcp", Const.SYSLOG_TCP_PORT);
+        Runnable worker3 = new MonitorThread("tls", Const.SYSLOG_TLS_PORT);
         executor.execute(worker1);
         executor.execute(worker2);
         executor.execute(worker3);
 
     }
 
-    private static class WorkerRunn implements Runnable {
+    private static int checkConfig(Map<String, Object> props) {
+        if (props.containsKey("export")) {
+            if ("true".equals(props.get("export").toString())) {
+                if (!props.containsKey("pattern")) {
+                    return -1;
+                }
+                switch ((String) props.get("pattern")) {
+                    case "file":
+                        return 1;
+                    case "kafka":
+                        return 2;
+                    case "es":
+                        return 3;
+                    default:
+                        return -1;
+                }
+            }
+        }
+        return 0;
+    }
+
+    private static class MonitorThread implements Runnable {
 
         private String protocol;
         private int port;
 
-        public WorkerRunn(String protocol, int port) {
+        public MonitorThread(String protocol, int port) {
             this.protocol = protocol;
             this.port = port;
             if (port == 0 || protocol.isEmpty()) {
@@ -50,6 +78,27 @@ public class Syslog {
             } catch (Exception e){
                 e.printStackTrace();
             }
+        }
+    }
+
+    private static class ExportThread implements Runnable {
+
+        private int key;
+        private Map<String, Object> props;
+
+        public ExportThread(int key, Map<String, Object> props) {
+            this.key = key;
+            this.props = props;
+            if (key != 1 || key != 2 || key != 3) {
+                System.out.println("config error: Errors in parameter setting for export");
+                System.exit(-1);
+            }
+        }
+
+        @Override
+        public void run() {
+            Export export = new Export(key, props);
+            export.listen();
         }
     }
 

@@ -2,6 +2,7 @@ package org.yis.util;
 
 import org.yis.entity.Const;
 import org.yis.entity.Message;
+import org.yis.entity.MessageQueue;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 
 /**
@@ -89,26 +91,15 @@ public class Utils {
 
     /**
      * 置入内存队列
-     * 原来这是开发给logstash使用，现在抽离为一个单独的组件，所以注释掉
      *
      * @param message
      */
     public static void pushToInput(Message message) {
-//        try {
-//            String jsonObj = mapper.writeValueAsString(message);
-//            Map<String, Object> event = Channel.getServer().getDecoder().decode(message.toString());
-//            Map<String, Object> event = beanToMap(message);
-//            System.out.println(event);
-//            if (event != null && event.size() > 0) {
-//                Channel.getServer().process(event);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            logger.error(e.toString());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            logger.error(e.toString());
-//        }
+        try {
+            MessageQueue.getInstance().put(message);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 

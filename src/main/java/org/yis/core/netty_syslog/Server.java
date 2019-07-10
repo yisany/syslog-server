@@ -65,23 +65,6 @@ public class Server {
                 System.out.println("输入有误 ！！！");
                 System.exit(-1);
         }
-//        if (protocol.equalsIgnoreCase("udp")){
-//            // 调用udp服务
-//            udp(port);
-//        } else if (protocol.equalsIgnoreCase("tcp")){
-//            // 调用tcp服务
-//            tcp(port);
-//        } else if(protocol.equalsIgnoreCase("tls")){
-//            // 调用tls服务
-//            SSLContext sslContext = getSslContext();
-//
-//            JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
-//
-//            tls(port, context);
-//        } else {
-//            System.out.println("输入有误 ！！！");
-//            System.exit(-1);
-//        }
     }
 
     /**

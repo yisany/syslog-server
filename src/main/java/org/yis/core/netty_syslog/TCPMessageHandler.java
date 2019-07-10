@@ -31,7 +31,7 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
         Message mmsg = Utils.initMessage(ip, port, body);
         System.out.println(">>> message came: "+ mmsg.toString());
 
-        //加入到jlogstash-input还要置入Input内存队列
+        //置入内存队列
 //        Utils.pushToInput(mmsg);
     }
 }

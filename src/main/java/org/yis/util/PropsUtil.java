@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PropsUtil {
 
-    private volatile ConcurrentHashMap<String, Object> props = new ConcurrentHashMap<>();
+    private static volatile ConcurrentHashMap<String, Object> props = new ConcurrentHashMap<>();
 
     private Properties pro = new Properties();
 
@@ -55,8 +55,8 @@ public class PropsUtil {
         }
     }
 
-    public Map getProps() {
-        return this.props;
+    public static Map getProps() {
+        return props;
     }
 
 }
