@@ -1,8 +1,8 @@
-package org.yis.syslog4j_syslog;
+package org.yis.core.syslog4j_syslog;
 
 import org.apache.commons.io.IOUtils;
 import org.productivity.java.syslog4j.SyslogRuntimeException;
-import org.yis.TrustEveryoneTrustManager;
+import org.yis.util.TrustEveryoneTrustManager;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;

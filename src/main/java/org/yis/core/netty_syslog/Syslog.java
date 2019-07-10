@@ -1,6 +1,6 @@
-package org.yis.netty_syslog;
+package org.yis.core.netty_syslog;
 
-import org.yis.Const;
+import org.yis.entity.Const;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

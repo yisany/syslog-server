@@ -42,7 +42,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
-                    <mainClass>org.yis.syslog4j_syslog.App</mainClass>
+                    <mainClass>org.yis.core.syslog4j_syslog.App</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -59,7 +59,7 @@
                             <transformers>
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.yis.syslog4j_syslog.syslog.Server</mainClass>
+                                    <mainClass>org.yis.core.syslog4j_syslog.syslog.Server</mainClass>
                                 </transformer>
                             </transformers>
                            <createDependencyReducedPom>false</createDependencyReducedPom>

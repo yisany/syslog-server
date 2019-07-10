@@ -1,4 +1,4 @@
-package org.yis;
+package org.yis.entity;
 
 /**
  * Aim: Message信息封装

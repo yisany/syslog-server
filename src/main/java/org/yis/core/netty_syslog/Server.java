@@ -1,4 +1,4 @@
-package org.yis.netty_syslog;
+package org.yis.core.netty_syslog;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -13,7 +13,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.*;
 import org.apache.commons.io.IOUtils;
-import org.yis.TrustEveryoneTrustManager;
+import org.yis.util.TrustEveryoneTrustManager;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;

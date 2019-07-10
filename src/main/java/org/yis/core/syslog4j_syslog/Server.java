@@ -1,4 +1,4 @@
-package org.yis.syslog4j_syslog;
+package org.yis.core.syslog4j_syslog;
 
 import org.productivity.java.syslog4j.SyslogRuntimeException;
 import org.productivity.java.syslog4j.server.SyslogServer;

@@ -1,11 +1,11 @@
-package org.yis.netty_syslog;
+package org.yis.core.netty_syslog;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
-import org.yis.Message;
-import org.yis.Utils;
+import org.yis.entity.Message;
+import org.yis.util.Utils;
 
 import java.net.InetAddress;
 

@@ -1,10 +1,10 @@
-package org.yis.netty_syslog;
+package org.yis.core.netty_syslog;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.yis.Message;
-import org.yis.Utils;
+import org.yis.entity.Message;
+import org.yis.util.Utils;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
