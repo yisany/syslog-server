@@ -12,7 +12,7 @@ public final class Const {
 
     public static final int MESSAGE_LIMIT = 10000;
 
-    public static final String index = "%s/syslog_%s.txt";
+    public static final String INDEX = "%s/syslog_%s.txt";
 
     // syslog协议端口
     public static final int SYSLOG_UDP_PORT = 9897;

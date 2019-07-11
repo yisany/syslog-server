@@ -50,7 +50,10 @@ public class Export {
      * @param props
      */
     private void export2Kafka(Map<String, Object> props) {
-
+        String url = (String) props.get("bootstrapServers");
+        String topic = (String) props.get("topic");
+        ExportKafka kafka = new ExportKafka(url, topic);
+        kafka.write2Kafka();
     }
 
     /**
@@ -60,7 +63,7 @@ public class Export {
     private void export2File(Map<String, Object> props) {
         String path = (String) props.get("filePath");
         ExportFile file = new ExportFile();
-
+        file.write2File(path);
     }
 
 }

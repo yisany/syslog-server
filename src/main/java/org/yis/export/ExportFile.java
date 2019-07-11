@@ -22,7 +22,7 @@ public class ExportFile {
         LinkedBlockingQueue queue = MessageQueue.getInstance();
         try {
             String str = JSON.toJSONString(queue.take());
-            String file = String.format(Const.index, path, Utils.getDate());
+            String file = String.format(Const.INDEX, path, Utils.getDate());
             File log=new File(file);
             appendLog(log, str);
         } catch (InterruptedException e) {
