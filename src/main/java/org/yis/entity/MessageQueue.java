@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageQueue extends LinkedBlockingQueue {
 
-    private static volatile LinkedBlockingQueue<Object> queue;
+    private static volatile LinkedBlockingQueue<Message> queue;
 
     private MessageQueue() {
     }
@@ -18,7 +18,7 @@ public class MessageQueue extends LinkedBlockingQueue {
         if (queue == null) {
             synchronized (MessageQueue.class) {
                 if (queue == null) {
-                    queue = new LinkedBlockingQueue<Object>(Const.MESSAGE_LIMIT);
+                    queue = new LinkedBlockingQueue<Message>(Const.MESSAGE_LIMIT);
                 }
             }
         }

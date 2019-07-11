@@ -6,6 +6,7 @@ import org.yis.entity.MessageQueue;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
@@ -87,6 +88,16 @@ public class Utils {
         Date date = new Date();
         year = sdf.format(date);
         return sdf.format(date);
+    }
+
+    /**
+     * 获取日期
+     * @return
+     */
+    public static String getDate() {
+        Date date = new Date();
+        DateFormat short0 = DateFormat.getDateInstance( );
+        return short0.format(date);
     }
 
     /**
