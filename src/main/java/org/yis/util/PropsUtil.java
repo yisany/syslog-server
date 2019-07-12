@@ -20,16 +20,19 @@ public class PropsUtil {
 
     private Properties pro = new Properties();
 
-    private void readProps()  {
+    private Properties readProps()  {
+        Properties properties = new Properties();
         try {
             final InputStream in = getClass().getResourceAsStream("/application.properties");
-            pro.load(in);
+            properties.load(in);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return properties;
     }
 
     private void props2Maps() {
+        pro = readProps();
         Iterator<String> it = pro.stringPropertyNames().iterator();
         while (it.hasNext()) {
             String key = it.next();
@@ -56,6 +59,10 @@ public class PropsUtil {
     }
 
     public static Map getProps() {
+        PropsUtil util = new PropsUtil();
+        if (props.size() == 0) {
+            util.props2Maps();
+        }
         return props;
     }
 

@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author milu
@@ -19,12 +18,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ExportFile {
 
     public void write2File(String path) {
-        LinkedBlockingQueue queue = MessageQueue.getInstance();
         try {
-            String str = JSON.toJSONString(queue.take());
-            String file = String.format(Const.INDEX, path, Utils.getDate());
-            File log=new File(file);
-            appendLog(log, str);
+            while (true) {
+                String str = JSON.toJSONString(MessageQueue.getInstance().take());
+                String file = String.format(Const.INDEX, path, Utils.getDate());
+                File log=new File(file);
+                appendLog(log, str);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -36,11 +36,8 @@ public class ExportFile {
         try {
             if (!log.exists()) {
                 // 判断目录是否存在
-                File parentDir = new File(log.getParent());
-                if (!parentDir.exists()) {
-                    parentDir.mkdir();
-                    log.createNewFile();
-                }
+                judgeDirExist(log);
+                log.createNewFile();
                 fw = new FileWriter(log);
             } else {
                 fw = new FileWriter(log, true);
@@ -48,7 +45,10 @@ public class ExportFile {
             pw = new PrintWriter(fw);
             pw.println(str);
             pw.flush();
+            Thread.sleep(500);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -59,6 +59,13 @@ public class ExportFile {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    private void judgeDirExist(File log) {
+        File parentDir = new File(log.getParent());
+        if (!parentDir.exists()) {
+            parentDir.mkdir();
         }
     }
 

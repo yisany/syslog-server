@@ -18,6 +18,7 @@ public class Export {
     }
 
     public void listen() {
+        System.out.println("Syslog_Export is running...");
         switch (this.key){
             case 1:
                 // file

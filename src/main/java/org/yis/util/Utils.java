@@ -108,6 +108,7 @@ public class Utils {
     public static void pushToInput(Message message) {
         try {
             MessageQueue.getInstance().put(message);
+            System.out.println(MessageQueue.getInstance().size());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package org.yis.core.netty_syslog;
 
+import com.alibaba.fastjson.JSON;
 import org.yis.entity.Const;
 import org.yis.export.Export;
 import org.yis.util.PropsUtil;
@@ -25,7 +26,6 @@ public class Syslog {
             Runnable export = new ExportThread(pattern, props);
             executor.execute(export);
         }
-        System.out.println("Syslog_Monitor is running...");
         Runnable worker1 = new MonitorThread("udp", Const.SYSLOG_UDP_PORT);
         Runnable worker2 = new MonitorThread("tcp", Const.SYSLOG_TCP_PORT);
         Runnable worker3 = new MonitorThread("tls", Const.SYSLOG_TLS_PORT);
@@ -41,7 +41,9 @@ public class Syslog {
                 if (!props.containsKey("pattern")) {
                     return -1;
                 }
-                switch ((String) props.get("pattern")) {
+                String pattern = (String) props.get("pattern");
+                System.out.println("Pattern: " + pattern);
+                switch (pattern) {
                     case "file":
                         return 1;
                     case "kafka":
@@ -89,7 +91,7 @@ public class Syslog {
         public ExportThread(int key, Map<String, Object> props) {
             this.key = key;
             this.props = props;
-            if (key != 1 || key != 2 || key != 3) {
+            if (key == 0 || key == -1) {
                 System.out.println("config error: Errors in parameter setting for export");
                 System.exit(-1);
             }

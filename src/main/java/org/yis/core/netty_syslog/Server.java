@@ -51,12 +51,15 @@ public class Server {
     public void listen() {
         switch (protocol.toLowerCase()){
             case "udp":
+                System.out.println("Syslog_UDP_Monitor is running...");
                 udp(port);
                 break;
             case "tcp":
+                System.out.println("Syslog_TCP_Monitor is running...");
                 tcp(port);
                 break;
             case "tls":
+                System.out.println("Syslog_TLS_Monitor is running...");
                 SSLContext sslContext = getSslContext();
                 JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
                 tls(port, context);

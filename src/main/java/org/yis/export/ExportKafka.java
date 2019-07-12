@@ -5,7 +5,6 @@ import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yis.entity.Const;
 import org.yis.entity.MessageQueue;
 
 import java.util.Properties;
