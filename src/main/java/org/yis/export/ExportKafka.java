@@ -40,26 +40,15 @@ public class ExportKafka {
     }
 
     public void write2Kafka() {
-
-        LinkedBlockingQueue queue = MessageQueue.getInstance();
+        System.out.println("exportToKafka is working...");
+        System.out.println(JSON.toJSONString(p));
         try {
-            String msg = JSON.toJSONString(queue.take());
-            ProducerRecord<String, String> record = new ProducerRecord<>(topic, msg);
-            kafkaProducer.send(record, new Callback() {
-
-                @Override
-                public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-                    try {
-                        if (e != null) {
-                            MessageQueue.getInstance().put(msg);
-                            logger.error("send data failed, wait to retry, value={},error={}", msg, e.getMessage());
-                            Thread.sleep(1000L);
-                        }
-                    } catch (InterruptedException var4) {
-                        logger.error("kafka send callback error", var4);
-                    }
-                }
-            });
+            while (true) {
+                String msg = JSON.toJSONString(MessageQueue.getInstance().take());
+                ProducerRecord<String, String> record = new ProducerRecord<>(topic, msg);
+                kafkaProducer.send(record);
+                Thread.sleep(500);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

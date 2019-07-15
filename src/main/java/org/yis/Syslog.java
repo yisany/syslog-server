@@ -1,6 +1,7 @@
-package org.yis.core.netty_syslog;
+package org.yis;
 
 import com.alibaba.fastjson.JSON;
+import org.yis.core.netty_syslog.Server;
 import org.yis.entity.Const;
 import org.yis.export.Export;
 import org.yis.util.PropsUtil;
