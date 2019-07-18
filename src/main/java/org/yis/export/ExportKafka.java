@@ -1,14 +1,17 @@
 package org.yis.export;
 
 import com.alibaba.fastjson.JSON;
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.yis.entity.MessageQueue;
 
 import java.util.Properties;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Future;
 
 /**
  * @author milu
@@ -17,7 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ExportKafka {
 
-    private static Logger logger = LoggerFactory.getLogger(ExportKafka.class);
+    private Logger logger = LogManager.getLogger(ExportKafka.class);
 
     private static Properties p;
 
@@ -40,16 +43,16 @@ public class ExportKafka {
     }
 
     public void write2Kafka() {
-        System.out.println("exportToKafka is working...");
-        System.out.println(JSON.toJSONString(p));
+        logger.info("exportToKafka is working...");
         try {
             while (true) {
                 String msg = JSON.toJSONString(MessageQueue.getInstance().take());
                 ProducerRecord<String, String> record = new ProducerRecord<>(topic, msg);
-                kafkaProducer.send(record);
+                Future<RecordMetadata> future = kafkaProducer.send(record);
+                System.out.println(future.isDone());
                 Thread.sleep(500);
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

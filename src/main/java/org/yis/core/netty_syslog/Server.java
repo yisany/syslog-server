@@ -13,6 +13,8 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.*;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.yis.util.TrustEveryoneTrustManager;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -40,6 +42,8 @@ public class Server {
 
     private SSLContext sslContext;
 
+    private Logger logger = LogManager.getLogger(Server.class);
+
     public Server(int port, String protocol) {
         this.port = port;
         this.protocol = protocol;
@@ -51,21 +55,21 @@ public class Server {
     public void listen() {
         switch (protocol.toLowerCase()){
             case "udp":
-                System.out.println("Syslog_UDP_Monitor is running...");
+                logger.info("Syslog_UDP_Monitor is running...");
                 udp(port);
                 break;
             case "tcp":
-                System.out.println("Syslog_TCP_Monitor is running...");
+                logger.info("Syslog_TCP_Monitor is running...");
                 tcp(port);
                 break;
             case "tls":
-                System.out.println("Syslog_TLS_Monitor is running...");
+                logger.info("Syslog_TLS_Monitor is running...");
                 SSLContext sslContext = getSslContext();
                 JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
                 tls(port, context);
                 break;
             default:
-                System.out.println("输入有误 ！！！");
+                logger.info("Input error !!!");
                 System.exit(-1);
         }
     }
@@ -80,7 +84,7 @@ public class Server {
             final KeyStore keyStore = KeyStore.getInstance("JKS");
             final InputStream is = getClass().getResourceAsStream("/server.keystore");
             if (is == null){
-                System.err.println("Server keystore not found.");
+                logger.error("Server keystore not found.");
             }
             final char[] keystorePwd = "123456".toCharArray();
             try {
@@ -98,6 +102,7 @@ public class Server {
             sslContext.init(keyManagerFactory.getKeyManagers(),
                     new TrustManager[] { new TrustEveryoneTrustManager() }, null);
         } catch (Exception  e) {
+            logger.error("Server.getSslContext warning, e={}", e);
             e.printStackTrace();
         }
         return sslContext;
@@ -116,6 +121,7 @@ public class Server {
             b.handler(new UDPMessageHandler());
             b.bind(port).sync().channel().closeFuture().await();
         } catch (InterruptedException e) {
+            logger.error("Server.udp warning, e={}", e);
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();
@@ -139,6 +145,7 @@ public class Server {
             ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
+            logger.error("Server.tcp warning, e={}", e);
             e.printStackTrace();
         } finally {
             bossGroup.shutdownGracefully();
@@ -163,7 +170,11 @@ public class Server {
             ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
+            logger.error("Server.tls warning, e={}", e);
             e.printStackTrace();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
     }
 

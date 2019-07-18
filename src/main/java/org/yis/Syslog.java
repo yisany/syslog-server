@@ -1,6 +1,7 @@
 package org.yis;
 
-import com.alibaba.fastjson.JSON;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.yis.core.netty_syslog.Server;
 import org.yis.entity.Const;
 import org.yis.export.Export;
@@ -17,10 +18,12 @@ import java.util.concurrent.Executors;
  */
 public class Syslog {
 
+    private static Logger logger = LogManager.getLogger(Syslog.class);
+
     public static void main(String[] args){
         ExecutorService executor = Executors.newFixedThreadPool(5);
-        System.out.println("Syslog System Check");
-        System.out.println("Checking config...");
+        logger.info("Syslog System Check...");
+        logger.info("Checking config...");
         Map<String, Object> props = PropsUtil.getProps();
         int pattern = checkConfig(props);
         if (pattern != 0) {
@@ -43,7 +46,7 @@ public class Syslog {
                     return -1;
                 }
                 String pattern = (String) props.get("pattern");
-                System.out.println("Pattern: " + pattern);
+                logger.info("Pattern={}", pattern);
                 switch (pattern) {
                     case "file":
                         return 1;
@@ -68,7 +71,7 @@ public class Syslog {
             this.protocol = protocol;
             this.port = port;
             if (port == 0 || protocol.isEmpty()) {
-                System.out.println("usage error: The parameter is error.");
+                logger.error("usage error: The parameter is error.");
                 System.exit(-1);
             }
         }
@@ -93,7 +96,7 @@ public class Syslog {
             this.key = key;
             this.props = props;
             if (key == 0 || key == -1) {
-                System.out.println("config error: Errors in parameter setting for export");
+                logger.error("config error: Errors in parameter setting for export");
                 System.exit(-1);
             }
         }

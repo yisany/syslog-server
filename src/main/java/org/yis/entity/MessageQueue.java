@@ -1,7 +1,5 @@
 package org.yis.entity;
 
-import com.alibaba.fastjson.JSON;
-
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -18,7 +16,6 @@ public class MessageQueue extends LinkedBlockingQueue {
 
     @Override
     public void put(Object o) throws InterruptedException {
-        System.out.println("queue插入一条消息：" + JSON.toJSONString(o));
         super.put(o);
     }
 

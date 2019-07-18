@@ -1,5 +1,8 @@
 package org.yis.export;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Map;
 
 /**
@@ -8,6 +11,8 @@ import java.util.Map;
  * @createTime 2019年07月10日 17:50:00
  */
 public class Export {
+
+    private Logger logger = LogManager.getLogger(Export.class);
 
     private int key;
     private Map<String, Object> props;
@@ -18,7 +23,7 @@ public class Export {
     }
 
     public void listen() {
-        System.out.println("Syslog_Export is running...");
+        logger.info("Syslog_Export is running...");
         switch (this.key){
             case 1:
                 // file
@@ -33,7 +38,7 @@ public class Export {
                 export2ES(props);
                 break;
             default:
-                System.out.println("输入有误 ！！！");
+                logger.error("Input error！！！");
                 System.exit(-1);
         }
     }
