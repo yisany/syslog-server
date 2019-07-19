@@ -46,14 +46,13 @@ public class ExportKafka {
         logger.info("exportToKafka is working...");
         try {
             while (true) {
-                String msg = JSON.toJSONString(MessageQueue.getInstance().take());
+                String msg = MessageQueue.getInstance().take().toString();
                 ProducerRecord<String, String> record = new ProducerRecord<>(topic, msg);
-                Future<RecordMetadata> future = kafkaProducer.send(record);
-                System.out.println(future.isDone());
+                kafkaProducer.send(record);
                 Thread.sleep(500);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("ExportKafka.write2Kafka error, e={}", e);
         }
     }
 

@@ -1,6 +1,5 @@
 package org.yis.util;
 
-import lombok.Data;
 import org.apache.http.HttpHost;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,5 +131,14 @@ public class RestClientUtils {
      */
     public void searchAPI() {
         //...
+    }
+
+    /**
+     * 查询索引是否存在
+     * @param index 索引名
+     * @return
+     */
+    public boolean indexIsExist(String index) {
+        return true;
     }
 }

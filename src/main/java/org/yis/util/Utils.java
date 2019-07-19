@@ -1,5 +1,6 @@
 package org.yis.util;
 
+import com.alibaba.fastjson.JSON;
 import org.yis.entity.Const;
 import org.yis.entity.Message;
 import org.yis.entity.MessageQueue;
@@ -107,7 +108,7 @@ public class Utils {
      */
     public static void pushToInput(Message message) {
         try {
-            MessageQueue.getInstance().put(message);
+            MessageQueue.getInstance().put(JSON.toJSONString(message));
             System.out.println("队列中信息数量：" + MessageQueue.getInstance().size());
         } catch (InterruptedException e) {
             e.printStackTrace();

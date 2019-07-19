@@ -20,7 +20,7 @@ public class ExportFile {
     public void write2File(String path) {
         try {
             while (true) {
-                String str = JSON.toJSONString(MessageQueue.getInstance().take());
+                String str = MessageQueue.getInstance().take().toString();
                 String file = String.format(Const.INDEX, path, Utils.getDate());
                 File log=new File(file);
                 appendLog(log, str);

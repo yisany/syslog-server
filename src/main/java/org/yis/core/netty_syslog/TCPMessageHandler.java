@@ -1,5 +1,6 @@
 package org.yis.core.netty_syslog;
 
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -33,9 +34,10 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
         int port = insocket.getPort();
 
         Message mmsg = Utils.initMessage(ip, port, body);
-        System.out.println(">>> message came: "+ mmsg.toString());
+
+        System.out.println(">>> message came: "+ JSON.toJSONString(mmsg));
 
         //置入内存队列
-//        Utils.pushToInput(mmsg);
+        Utils.pushToInput(mmsg);
     }
 }
