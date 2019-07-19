@@ -8,8 +8,7 @@ import org.yis.export.Export;
 import org.yis.util.PropsUtil;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Aim: 程序主入口
@@ -20,8 +19,11 @@ public class Syslog {
 
     private static Logger logger = LogManager.getLogger(Syslog.class);
 
+    private static final String EXPORT = "export";
+    private static final String PATTERN = "pattern";
+
     public static void main(String[] args){
-        ExecutorService executor = Executors.newFixedThreadPool(5);
+        ThreadPoolExecutor executor = newFixedThreadPool(5);
         logger.info("Syslog System Check...");
         logger.info("Checking config...");
         Map<String, Object> props = PropsUtil.getProps();
@@ -30,19 +32,20 @@ public class Syslog {
             Runnable export = new ExportThread(pattern, props);
             executor.execute(export);
         }
-        Runnable worker1 = new MonitorThread("udp", Const.SYSLOG_UDP_PORT);
-        Runnable worker2 = new MonitorThread("tcp", Const.SYSLOG_TCP_PORT);
-        Runnable worker3 = new MonitorThread("tls", Const.SYSLOG_TLS_PORT);
-        executor.execute(worker1);
-        executor.execute(worker2);
-        executor.execute(worker3);
+        Runnable workerUdp = new MonitorThread("udp", Const.SYSLOG_UDP_PORT);
+        Runnable workerTcp = new MonitorThread("tcp", Const.SYSLOG_TCP_PORT);
+        Runnable workerTls = new MonitorThread("tls", Const.SYSLOG_TLS_PORT);
+        executor.execute(workerUdp);
+        executor.execute(workerTcp);
+        executor.execute(workerTls);
 
     }
 
     private static int checkConfig(Map<String, Object> props) {
-        if (props.containsKey("export")) {
-            if ("true".equals(props.get("export").toString())) {
-                if (!props.containsKey("pattern")) {
+        if (props.containsKey(EXPORT)) {
+
+            if (Boolean.TRUE.toString().equals(props.get(EXPORT).toString())) {
+                if (!props.containsKey(PATTERN)) {
                     return -1;
                 }
                 String pattern = (String) props.get("pattern");
@@ -60,6 +63,12 @@ public class Syslog {
             }
         }
         return 0;
+    }
+
+    public static ThreadPoolExecutor newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>());
     }
 
     private static class MonitorThread implements Runnable {

@@ -48,7 +48,9 @@ public class Export {
      * @param props
      */
     private void export2ES(Map<String, Object> props) {
-
+        String host = (String) props.get("hosts");
+        ExportES es = new ExportES(host, 9300);
+        es.write2Es();
     }
 
     /**
