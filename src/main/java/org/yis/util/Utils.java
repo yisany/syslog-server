@@ -47,16 +47,26 @@ public class Utils {
             parseDayAndTime(str, message);
             message.setHost(str[5]);
             message.setProcessName(str[6].substring(0, str[6].length() - 1));
-            message.setMessage(msg);
+            message.setMessage(structureMsg(msg));
         } else {
             message.setUnique("unknown");
             message.setPri(0);
             message.setTimeStamp("unknown");
             message.setHost("unknown");
             message.setProcessName("unknown");
-            message.setMessage(msg);
+            message.setMessage(structureMsg(msg));
         }
         return message;
+    }
+
+    /**
+     * 去除unique生成消息正文
+     * @param msg
+     * @return
+     */
+    private static String structureMsg(String msg) {
+        int sIndex = msg.indexOf("\\s");
+        return msg.substring(sIndex + 1);
     }
 
     /**

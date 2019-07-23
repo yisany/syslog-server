@@ -11,37 +11,29 @@
             },
             "mappings": {
                 "properties": {
-                    "demoId":{
-                        "type":"long"
+                    "ipAddress":{
+                        "type":"keyword"
                     },
-                    "contentbody": {
-                        "type": "text"
+                    "port": {
+                        "type": "integer"
                     },
-                    "agentStarttime": {
+                    "unique": {
+                        "type": "keyword"
+                    },
+                    "pri": {
+                        "type": "long"
+                    },
+                    "timeStamp": {
                         "type": "date"
-                         ## ,"format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
                     },
-                    "applicationName": {
-                        "type": "text",
-                        "fields": { ##dsl注释 定义精确查找的内部keyword字段
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
+                    "host":{
+                        "type":"text"
                     },
-                    "name": {
+                    "processName": {
                         "type": "text"
                     },
-                    "contrastStatus":{
-                        "type":"integer"
-                    },
-                    "orderId": {
-                        "type": "text",
-                        "fields": { ##dsl注释 定义精确查找的内部keyword字段
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
+                    "message": {
+                        "type": "text"
                     }
                 }
             }

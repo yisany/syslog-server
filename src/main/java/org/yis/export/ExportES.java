@@ -13,7 +13,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.yis.entity.EsDocument;
 import org.yis.entity.Message;
 import org.yis.entity.MessageQueue;
-import org.yis.util.RestClientUtils;
 
 /**
  * @author milu
