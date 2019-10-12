@@ -6,13 +6,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.client.ClientInterface;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.yis.entity.EsDocument;
 import org.yis.entity.Message;
 import org.yis.entity.MessageQueue;
+import org.yis.util.Utils;
 
 /**
  * @author milu
@@ -57,14 +54,11 @@ public class ExportES {
         document.setPri(message.getPri());
         document.setProcessName(message.getProcessName());
         document.setUnique(message.getUnique());
-        document.setTimeStamp(toUTC(message.getTimeStamp(), "yyyy-MM-dd HH:mm:ss.SSS"));
+        document.setTimeStamp(Utils.toUTC(message.getTimeStamp(), "yyyy-MM-dd'Z'HH:mm:ss.SSS'T'"));
         return document;
     }
 
-    public static String toUTC(String time, String fromPattern) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern(fromPattern);
-        return DateTime.parse(time, formatter).toDateTime(DateTimeZone.UTC).toString();
-    }
+
 
 
 }

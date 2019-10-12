@@ -1,6 +1,10 @@
 package org.yis.util;
 
 import com.alibaba.fastjson.JSON;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.yis.entity.Const;
 import org.yis.entity.Message;
 import org.yis.entity.MessageQueue;
@@ -112,6 +116,17 @@ public class Utils {
     }
 
     /**
+     * 转换UTC时间
+     * @param time
+     * @param fromPattern
+     * @return
+     */
+    public static String toUTC(String time, String fromPattern) {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(fromPattern);
+        return DateTime.parse(time, formatter).toDateTime(DateTimeZone.UTC).toString();
+    }
+
+    /**
      * 置入内存队列
      *
      * @param message
@@ -119,7 +134,7 @@ public class Utils {
     public static void pushToInput(Message message) {
         try {
             MessageQueue.getInstance().put(JSON.toJSONString(message));
-            System.out.println("队列中信息数量：" + MessageQueue.getInstance().size());
+//            System.out.println("队列中信息数量：" + MessageQueue.getInstance().size());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

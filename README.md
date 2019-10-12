@@ -2,7 +2,7 @@
 
 该项目基于 [syslog4j](http://www.syslog4j.org/) 和 [simple-syslog-server](https://github.com/kwart/simple-syslog-server) 实现
 
-有两个版本：
+有两个版本（默认使用Netty版本）：
 
 - 基于 `syslog4j` jar包实现
 - 基于Netty实现
@@ -13,23 +13,32 @@
 - TCP
 - TLS (使用自签名证书) 
 
-Syslog服务端监听 **port 9898** 端口
-
-> 最新版改为同时监听三种服务
->
-> udp监听9897端口，tcp监听9898端口，tls监听9899端口
+udp监听9897端口，tcp监听9898端口，tls监听9899端口
 
 <br>
+
+## 项目结构
+
+项目目前分为四个包和一个启动类：
+
+```
+syslog_server
+  ├── Syslog.java  -- 启动类
+  ├── core	-- 接收服务器
+  ├── entity	-- 实体类
+  ├── export	-- output类
+  └── util	-- 工具类
+```
+
+
 
 ## 使用方法
 
 使用maven打包成jar包，然后运行：
 
 ```
-java -jar simple-syslog-server.jar [udp|tcp|tls]
+java -jar simple-syslog-server.jar
 ```
-
-如果未提供后面的协议参数，默认使用 **"udp"** 启动监听。
 
 <br>
 
@@ -111,4 +120,4 @@ tls需要完成一下几个步骤：
 
 ## License
 
-- [GNU Lesser General Public License Version 2.1](http://www.gnu.org/licenses/lgpl-2.1-standalone.html)
+- [GNU Lesser General Public License Version 2.1](
