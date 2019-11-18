@@ -32,10 +32,7 @@ public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
         InetAddress ip = message.sender().getAddress();
         int port = message.sender().getPort();
 
-        System.out.println(body);
         Message mmsg = Utils.initMessage(ip, port, body);
-//        System.out.println(">>> message came: "+ mmsg.toString());
-
         // 置入Input内存队列
         Utils.pushToInput(mmsg);
     }

@@ -1,6 +1,5 @@
 package org.yis.core.netty_syslog;
 
-import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -25,7 +24,7 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
     private Logger logger = LogManager.getLogger(TCPMessageHandler.class);
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object message) {
         String body = (String)message;
 
         //信息初始化
@@ -34,9 +33,6 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
         int port = insocket.getPort();
 
         Message mmsg = Utils.initMessage(ip, port, body);
-
-        System.out.println(">>> message came: "+ JSON.toJSONString(mmsg));
-
         //置入内存队列
         Utils.pushToInput(mmsg);
     }

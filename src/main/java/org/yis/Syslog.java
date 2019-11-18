@@ -7,6 +7,8 @@ import org.yis.entity.Const;
 import org.yis.export.Export;
 import org.yis.util.PropsUtil;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -29,15 +31,17 @@ public class Syslog {
         Map<String, Object> props = PropsUtil.getProps();
         int pattern = checkConfig(props);
         if (pattern != 0) {
-            Runnable export = new ExportThread(pattern, props);
-            executor.execute(export);
+            executor.execute(new ExportThread(pattern, props));
         }
-        Runnable workerUdp = new MonitorThread("udp", Const.SYSLOG_UDP_PORT);
-        Runnable workerTcp = new MonitorThread("tcp", Const.SYSLOG_TCP_PORT);
-        Runnable workerTls = new MonitorThread("tls", Const.SYSLOG_TLS_PORT);
-        executor.execute(workerUdp);
-        executor.execute(workerTcp);
-        executor.execute(workerTls);
+
+        Map<String, Integer> protPort = new HashMap() {{
+            put(Const.SYSLOG_PROTOCOLS[0], Const.SYSLOG_UDP_PORT);
+            put(Const.SYSLOG_PROTOCOLS[1], Const.SYSLOG_TCP_PORT);
+            put(Const.SYSLOG_PROTOCOLS[2], Const.SYSLOG_TLS_PORT);
+        }};
+
+        protPort.entrySet().stream()
+                .forEach(k -> executor.execute(new MonitorThread(k.getKey(), k.getValue())));
 
     }
 
@@ -68,7 +72,7 @@ public class Syslog {
     public static ThreadPoolExecutor newFixedThreadPool(int nThreads) {
         return new ThreadPoolExecutor(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>());
+                new LinkedBlockingQueue<>());
     }
 
     private static class MonitorThread implements Runnable {

@@ -116,6 +116,12 @@ tls需要完成一下几个步骤：
    *.* @@ip:9898;myFormat
    ```
 
+最后手动重启`rsyslog`服务:
+
+```
+systemctl restart rsyslog
+```
+
 <br>
 
 ## License

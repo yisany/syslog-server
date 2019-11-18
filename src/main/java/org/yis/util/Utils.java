@@ -14,10 +14,10 @@ import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 
 /**
@@ -43,7 +43,7 @@ public class Utils {
         Message message = new Message();
         message.setIpAddress(address.toString().substring(1));
         message.setPort(port);
-        Matcher m = Const.getRegex().matcher(msg);
+        Matcher m = Const.SYSLOG_REGEX.matcher(msg);
         if (m.find()) {
             String[] str = msg.split("\\s+");
             message.setUnique(str[0]);
@@ -55,7 +55,7 @@ public class Utils {
         } else {
             message.setUnique("unknown");
             message.setPri(0);
-            message.setTimeStamp("unknown");
+            message.setTimeStamp(getTime());
             message.setHost("unknown");
             message.setProcessName("unknown");
             message.setMessage(structureMsg(msg));
@@ -69,8 +69,11 @@ public class Utils {
      * @return
      */
     private static String structureMsg(String msg) {
-        int sIndex = msg.indexOf("\\s");
-        return msg.substring(sIndex + 1);
+        Matcher matcher = Const.SYSLOG_MAIN_BODY.matcher(msg);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return msg;
     }
 
     /**
@@ -84,12 +87,12 @@ public class Utils {
         String day = null;
         if (str[3].length() == 1) {
             // 1 - 9
-            day = str[2] + " 0" + str[3];
+            day = Const.MONTH.get(str[2]) + " 0" + str[3];
         } else {
             // 10 - 31
-            day = str[2] + " " + str[3];
+            day = Const.MONTH.get(str[2]) + " " + str[3];
         }
-        LocalDate localDate = LocalDate.parse((year == "" ? getCurrentYear() : year) + " " + day, Const.getDateFormatter());
+        LocalDate localDate = LocalDate.parse((year == "" ? getCurrentYear() : year) + " " + day, Const.DATE_TIME_FORMATTER);
         message.setTimeStamp(localDate.toString() + " " + str[4]);
     }
 
@@ -113,6 +116,17 @@ public class Utils {
         Date date = new Date();
         DateFormat short0 = DateFormat.getDateInstance( );
         return short0.format(date);
+    }
+
+    /**
+     * 获取时间
+     * @return
+     */
+    public static String getTime() {
+        LocalDateTime time = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        String s = DateTime.parse(time.toString(), formatter).toDateTime(DateTimeZone.UTC).toString();
+        return s;
     }
 
     /**
