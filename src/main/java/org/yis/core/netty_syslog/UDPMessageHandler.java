@@ -7,6 +7,7 @@ import io.netty.channel.socket.DatagramPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yis.entity.Message;
+import org.yis.export.Export;
 import org.yis.util.Utils;
 
 import java.net.InetAddress;
@@ -34,6 +35,6 @@ public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
 
         Message mmsg = Utils.initMessage(ip, port, body);
         // 置入Input内存队列
-        Utils.pushToInput(mmsg);
+        Export.pushToOut(mmsg);
     }
 }

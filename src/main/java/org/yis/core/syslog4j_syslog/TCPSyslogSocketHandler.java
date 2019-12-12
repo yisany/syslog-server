@@ -24,6 +24,7 @@ package org.yis.core.syslog4j_syslog;
 import org.apache.commons.io.IOUtils;
 import org.productivity.java.syslog4j.server.SyslogServerIF;
 import org.yis.entity.Message;
+import org.yis.export.Export;
 import org.yis.util.Utils;
 
 import java.io.BufferedInputStream;
@@ -128,6 +129,6 @@ public class TCPSyslogSocketHandler implements Runnable {
 		System.out.println(">>> message came: "+ message);
 
 		//加入到jlogstash-input还要置入Input内存队列
-		Utils.pushToInput(message);
+		Export.pushToOut(message);
 	}
 }

@@ -1,13 +1,15 @@
 package org.yis.export;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yis.entity.MessageQueue;
+import org.yis.entity.queue.QueueInstance;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -43,10 +45,10 @@ public class ExportKafka {
         logger.info("exportToKafka is working...");
         try {
             while (true) {
-                String msg = MessageQueue.getInstance().take().toString();
+                Map<String, Object> take = QueueInstance.getInstance().take();
+                String msg = JSON.toJSONString(take);
                 ProducerRecord<String, String> record = new ProducerRecord<>(topic, msg);
                 kafkaProducer.send(record);
-                Thread.sleep(500);
             }
         } catch (Exception e) {
             logger.warn("ExportKafka.write2Kafka error, e={}", e);

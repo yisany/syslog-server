@@ -1,7 +1,10 @@
 package org.yis.export;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.yis.entity.Message;
+import org.yis.entity.queue.QueueInstance;
 
 import java.util.Map;
 
@@ -58,6 +61,16 @@ public class Export {
         String path = (String) props.get("filePath");
         ExportFile file = new ExportFile();
         file.write2File(path);
+    }
+
+    /**
+     * 置入内存队列
+     *
+     * @param message
+     */
+    public static void pushToOut(Message message) {
+        Map<String, Object> event = JSON.parseObject(JSON.toJSONString(message));
+        QueueInstance.getInstance().put(event);
     }
 
 }

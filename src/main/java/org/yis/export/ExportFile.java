@@ -1,14 +1,16 @@
 package org.yis.export;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.yis.entity.Const;
-import org.yis.entity.MessageQueue;
+import org.yis.entity.queue.QueueInstance;
 import org.yis.util.Utils;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 /**
  * @author milu
@@ -18,15 +20,12 @@ import java.io.PrintWriter;
 public class ExportFile {
 
     public void write2File(String path) {
-        try {
-            while (true) {
-                String str = MessageQueue.getInstance().take().toString();
-                String file = String.format(Const.INDEX, path, Utils.getDate());
-                File log=new File(file);
-                appendLog(log, str);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (true) {
+            Map<String, Object> take = QueueInstance.getInstance().take();
+            String str = JSON.toJSONString(take);
+            String file = String.format(Const.INDEX, path, Utils.getDate());
+            File log=new File(file);
+            appendLog(log, str);
         }
     }
 

@@ -1,13 +1,14 @@
 package org.yis.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.yis.entity.Const;
 import org.yis.entity.Message;
-import org.yis.entity.MessageQueue;
+import org.yis.entity.queue.QueueInstance;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -65,6 +66,7 @@ public class Utils {
 
     /**
      * 去除unique生成消息正文
+     *
      * @param msg
      * @return
      */
@@ -110,16 +112,18 @@ public class Utils {
 
     /**
      * 获取日期
+     *
      * @return
      */
     public static String getDate() {
         Date date = new Date();
-        DateFormat short0 = DateFormat.getDateInstance( );
+        DateFormat short0 = DateFormat.getDateInstance();
         return short0.format(date);
     }
 
     /**
      * 获取时间
+     *
      * @return
      */
     public static String getTime() {
@@ -131,6 +135,7 @@ public class Utils {
 
     /**
      * 转换UTC时间
+     *
      * @param time
      * @param fromPattern
      * @return
@@ -140,56 +145,6 @@ public class Utils {
         return DateTime.parse(time, formatter).toDateTime(DateTimeZone.UTC).toString();
     }
 
-    /**
-     * 置入内存队列
-     *
-     * @param message
-     */
-    public static void pushToInput(Message message) {
-        System.out.println(JSON.toJSONString(message));
-//        try {
-//            MessageQueue.getInstance().put(JSON.toJSONString(message));
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
 
-    }
-
-    /**
-     * javaBean 转 Map
-     *
-     * @param object 需要转换的javabean
-     * @return 转换结果map
-     * @throws Exception
-     */
-    public static Map<String, Object> beanToMap(Object object) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-
-        Class cls = object.getClass();
-        Field[] fields = cls.getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            map.put(field.getName(), field.get(object));
-        }
-        return map;
-    }
-
-    /**
-     * map转换为javaBean
-     *
-     * @param map 需要转换的map
-     * @param cls 目标javaBean的类对象
-     * @return 目标类object
-     * @throws Exception
-     */
-    public static Object mapToBean(Map<String, Object> map, Class cls) throws Exception {
-        Object object = cls.newInstance();
-        for (String key : map.keySet()) {
-            Field temFiels = cls.getDeclaredField(key);
-            temFiels.setAccessible(true);
-            temFiels.set(object, map.get(key));
-        }
-        return object;
-    }
 
 }

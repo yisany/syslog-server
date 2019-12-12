@@ -6,6 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yis.entity.Message;
+import org.yis.export.Export;
 import org.yis.util.Utils;
 
 import java.net.InetAddress;
@@ -34,6 +35,6 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
 
         Message mmsg = Utils.initMessage(ip, port, body);
         //置入内存队列
-        Utils.pushToInput(mmsg);
+        Export.pushToOut(mmsg);
     }
 }
