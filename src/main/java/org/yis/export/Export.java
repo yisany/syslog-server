@@ -33,24 +33,10 @@ public class Export {
                 // kafka
                 export2Kafka(props);
                 break;
-            case 3:
-                // es
-                export2ES(props);
-                break;
             default:
                 logger.error("Input error！！！");
                 System.exit(-1);
         }
-    }
-
-    /**
-     * 输出内容到ES
-     * @param props
-     */
-    private void export2ES(Map<String, Object> props) {
-        String index = (String) props.get("elasticsearch.index");
-        ExportES es = new ExportES();
-        es.write2Es(index);
     }
 
     /**

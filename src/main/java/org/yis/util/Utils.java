@@ -146,12 +146,12 @@ public class Utils {
      * @param message
      */
     public static void pushToInput(Message message) {
-        try {
-            MessageQueue.getInstance().put(JSON.toJSONString(message));
-//            System.out.println("队列中信息数量：" + MessageQueue.getInstance().size());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        System.out.println(JSON.toJSONString(message));
+//        try {
+//            MessageQueue.getInstance().put(JSON.toJSONString(message));
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
     }
 

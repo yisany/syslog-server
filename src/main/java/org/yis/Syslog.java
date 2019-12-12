@@ -59,8 +59,6 @@ public class Syslog {
                         return 1;
                     case "kafka":
                         return 2;
-                    case "es":
-                        return 3;
                     default:
                         return -1;
                 }

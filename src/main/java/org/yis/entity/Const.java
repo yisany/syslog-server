@@ -17,7 +17,7 @@ public final class Const {
 
     // syslog协议端口
     public static final int SYSLOG_UDP_PORT = 9898;
-    public static final int SYSLOG_TCP_PORT = 9897;
+    public static final int SYSLOG_TCP_PORT = 9898;
     public static final int SYSLOG_TLS_PORT = 9899;
 
     public final static String[] SYSLOG_PROTOCOLS = {"udp", "tcp", "tls"};
