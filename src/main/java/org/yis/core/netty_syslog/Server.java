@@ -103,7 +103,6 @@ public class Server {
                     new TrustManager[] { new TrustEveryoneTrustManager() }, null);
         } catch (Exception  e) {
             logger.error("Server.getSslContext warning, e={}", e);
-            e.printStackTrace();
         }
         return sslContext;
     }
@@ -122,7 +121,6 @@ public class Server {
             b.bind(port).sync().channel().closeFuture().await();
         } catch (InterruptedException e) {
             logger.error("Server.udp warning, e={}", e);
-            e.printStackTrace();
         } finally {
             group.shutdownGracefully();
         }
@@ -146,7 +144,6 @@ public class Server {
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             logger.error("Server.tcp warning, e={}", e);
-            e.printStackTrace();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
@@ -171,7 +168,6 @@ public class Server {
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             logger.error("Server.tls warning, e={}", e);
-            e.printStackTrace();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
