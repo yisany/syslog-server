@@ -1,4 +1,4 @@
-package org.yis.core.netty_syslog;
+package org.yis.core.syslog;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -6,9 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yis.entity.Message;
-import org.yis.export.Export;
-import org.yis.util.Utils;
+import org.yis.handler.OutputHandler;
 
 import java.net.InetAddress;
 
@@ -33,8 +31,9 @@ public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
         InetAddress ip = message.sender().getAddress();
         int port = message.sender().getPort();
 
-        Message mmsg = Utils.initMessage(ip, port, body);
+//        Message mmsg = Utils.initMessage(ip, port, body);
+
         // 置入Input内存队列
-        Export.pushToOut(mmsg);
+        OutputHandler.pushToOut(body, ip, port);
     }
 }

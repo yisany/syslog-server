@@ -1,0 +1,16 @@
+###              端口设置           ###
+port:
+  udp: 9897
+  tcp: 9898
+  tls: 9899
+
+###              导出设置           ###
+### file,kafka可以选其一, 也可以都用 ###
+### 用哪个就写哪个, 不用的就可以不写  ###
+export:
+  file: "/Users/milu/data/tmp/syslog/temp.txt"
+  kafka:
+    bootstrapServers: "172.16.8.151:9092,172.16.8.96:9092"
+    zkAddress: "172.16.8.132:2181/kafka"
+    topics: "milu_test"
+    producerSettings: {"max.request.size":"20971520","compression.type":"lz4","request.timeout.ms":"86400000","retries":"1000000","max.in.flight.requests.per.connection":"1"}

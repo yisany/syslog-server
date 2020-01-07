@@ -1,13 +1,11 @@
-package org.yis.core.netty_syslog;
+package org.yis.core.syslog;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yis.entity.Message;
-import org.yis.export.Export;
-import org.yis.util.Utils;
+import org.yis.handler.OutputHandler;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -33,8 +31,9 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
         InetAddress ip = insocket.getAddress();
         int port = insocket.getPort();
 
-        Message mmsg = Utils.initMessage(ip, port, body);
+//        Message mmsg = Utils.initMessage(ip, port, body);
+
         //置入内存队列
-        Export.pushToOut(mmsg);
+        OutputHandler.pushToOut(body, ip, port);
     }
 }

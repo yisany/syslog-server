@@ -1,13 +1,6 @@
 # Syslog日志接收服务器
 
-该项目基于 [syslog4j](http://www.syslog4j.org/) 和 [simple-syslog-server](https://github.com/kwart/simple-syslog-server) 实现
-
-有两个版本（默认使用Netty版本）：
-
-- 基于 `syslog4j` jar包实现
-- 基于Netty实现
-
-有三种协议可供选择：
+该项目有三种协议可供选择：
 
 - UDP
 - TCP
@@ -17,27 +10,22 @@ udp监听9897端口，tcp监听9898端口，tls监听9899端口
 
 <br>
 
-## 项目结构
+## UPDATE
 
-项目目前分为四个包和一个启动类：
+v3_20200107:
 
-```
-syslog_server
-  ├── Syslog.java  -- 启动类
-  ├── core	-- 接收服务器
-  ├── entity	-- 实体类
-  ├── export	-- output类
-  └── util	-- 工具类
-```
+1. 去除`syslog4j`模组
+2. 配置文件从properties改为yaml, 协议接收端口可配
+3. 输出端提供文件落盘和kafka导出两种方式
 
-
+<br>
 
 ## 使用方法
 
 使用maven打包成jar包，然后运行：
 
 ```
-java -jar simple-syslog-server.jar
+java -jar simple-syslog-server.jar -c /tmp/application.yaml
 ```
 
 <br>
@@ -126,4 +114,4 @@ systemctl restart rsyslog
 
 ## License
 
-- [GNU Lesser General Public License Version 2.1](
+- [GNU Lesser General Public License Version 2.1]

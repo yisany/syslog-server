@@ -1,25 +1,25 @@
-package org.yis.core.netty_syslog;
+package org.yis.handler;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.yis.comm.ProtocolEnum;
+import org.yis.core.syslog.SyslogTCPInitializer;
+import org.yis.core.syslog.SyslogTLSInitializer;
+import org.yis.core.syslog.UDPMessageHandler;
 import org.yis.util.TrustEveryoneTrustManager;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -31,10 +31,12 @@ import java.security.KeyStore;
  * Author milu
  * Version: v1.0.0
  */
-public class Server {
+public class InputHandler {
+
+    private static final Logger logger = LogManager.getLogger(InputHandler.class);
 
     private int port;
-    private String protocol;
+    private ProtocolEnum protocol;
 
     private EventLoopGroup group;
     private EventLoopGroup bossGroup;
@@ -42,9 +44,7 @@ public class Server {
 
     private SSLContext sslContext;
 
-    private Logger logger = LogManager.getLogger(Server.class);
-
-    public Server(int port, String protocol) {
+    public InputHandler(int port, ProtocolEnum protocol) {
         this.port = port;
         this.protocol = protocol;
     }
@@ -53,16 +53,16 @@ public class Server {
      * 监听服务
      */
     public void listen() {
-        switch (protocol.toLowerCase()){
-            case "udp":
+        switch (protocol){
+            case UDP:
                 logger.info("Syslog_UDP_Monitor is running...");
                 udp(port);
                 break;
-            case "tcp":
+            case TCP:
                 logger.info("Syslog_TCP_Monitor is running...");
                 tcp(port);
                 break;
-            case "tls":
+            case TLS:
                 logger.info("Syslog_TLS_Monitor is running...");
                 SSLContext sslContext = getSslContext();
                 JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
@@ -84,7 +84,7 @@ public class Server {
             final KeyStore keyStore = KeyStore.getInstance("JKS");
             final InputStream is = getClass().getResourceAsStream("/server.keystore");
             if (is == null){
-                logger.error("Server keystore not found.");
+                logger.error("InputHandler keystore not found.");
             }
             final char[] keystorePwd = "123456".toCharArray();
             try {
@@ -102,7 +102,7 @@ public class Server {
             sslContext.init(keyManagerFactory.getKeyManagers(),
                     new TrustManager[] { new TrustEveryoneTrustManager() }, null);
         } catch (Exception  e) {
-            logger.error("Server.getSslContext warning, e={}", e);
+            logger.error("InputHandler.getSslContext warning, e={}", e);
         }
         return sslContext;
     }
@@ -120,7 +120,7 @@ public class Server {
             b.handler(new UDPMessageHandler());
             b.bind(port).sync().channel().closeFuture().await();
         } catch (InterruptedException e) {
-            logger.error("Server.udp warning, e={}", e);
+            logger.error("InputHandler.udp warning, e={}", e);
         } finally {
             group.shutdownGracefully();
         }
@@ -143,7 +143,7 @@ public class Server {
             ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("Server.tcp warning, e={}", e);
+            logger.error("InputHandler.tcp warning, e={}", e);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
@@ -167,40 +167,10 @@ public class Server {
             ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("Server.tls warning, e={}", e);
+            logger.error("InputHandler.tls warning, e={}", e);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
-        }
-    }
-
-    private class SyslogTCPInitializer extends ChannelInitializer<SocketChannel> {
-
-        @Override
-        protected void initChannel(SocketChannel ch) throws Exception {
-            ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
-            ch.pipeline().addLast(new StringDecoder());
-            ch.pipeline().addLast(new TCPMessageHandler());
-        }
-    }
-
-    private class SyslogTLSInitializer extends ChannelInitializer<SocketChannel> {
-
-        private JdkSslContext context;
-
-        public SyslogTLSInitializer(JdkSslContext context) {
-            this.context = context;
-        }
-
-        @Override
-        protected void initChannel(SocketChannel ch) throws Exception {
-            SSLEngine sslEngine = context.newEngine(ch.alloc());
-            ch.pipeline().addFirst("ssl", new SslHandler(sslEngine));
-
-            ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
-            ch.pipeline().addLast(new StringDecoder());
-            ch.pipeline().addLast(new TCPMessageHandler());
-
         }
     }
 
