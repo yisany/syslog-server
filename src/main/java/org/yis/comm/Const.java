@@ -13,6 +13,8 @@ public final class Const {
 
     public static final String INDEX = "%s/syslog_%s.txt";
 
+    public static final String EXPORT_INTERFACE = "org.yis.export.ipml";
+
     public static final Pattern SYSLOG_REGEX = Pattern.compile("^\\S+\\s{1}\\d+\\s\\S+\\s{1,2}\\d+\\s\\d+:\\d+:\\d+\\s.*$");
     public static final Pattern SYSLOG_MAIN_BODY = Pattern.compile("\\d*\\s[A-Z][a-z]{2}\\s\\d*\\s\\d{1,2}:\\d{1,2}:\\d{1,2}.*");
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy MM dd", Locale.ENGLISH);

@@ -60,6 +60,7 @@ public class KafkaExport implements Export {
         }
     }
 
+    @Override
     public void release() {
         producer.close();
         logger.info("kafka producer release.");

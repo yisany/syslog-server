@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yis.comm.Config;
 import org.yis.comm.ProtocolEnum;
+import org.yis.comm.ShutDownHook;
 
 /**
  * March, or die.
@@ -29,7 +30,16 @@ public class BaseHandler {
         Config.executor.execute(new MonitorThread(ProtocolEnum.TCP, Config.TCP_PORT));
         Config.executor.execute(new MonitorThread(ProtocolEnum.TLS, Config.TLS_PORT));
 
-        // TODO 添加关闭钩子
+        // 添加关闭钩子
+        addShutDownHook();
+    }
+
+    /**
+     * 资源释放
+     */
+    private void addShutDownHook() {
+        ShutDownHook hook = new ShutDownHook();
+        hook.init();
     }
 
     private static class MonitorThread implements Runnable {

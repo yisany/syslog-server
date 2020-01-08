@@ -41,6 +41,11 @@ public class FileExport implements Export {
 //        appendLog(log, str);
     }
 
+    @Override
+    public void release() {
+
+    }
+
     private void appendLog(File log, String str) {
         FileWriter fw = null;
         PrintWriter pw = null;

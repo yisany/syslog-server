@@ -41,6 +41,10 @@ public class OutputHandler {
         }
     }
 
+    public static ConcurrentHashMap<OutModuleEnum, Export> getOutClass() {
+        return handler.outClass;
+    }
+
     /**
      * 输出
      *
