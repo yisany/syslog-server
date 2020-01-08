@@ -1,16 +1,18 @@
 package org.yis.export.ipml;
 
 import com.alibaba.fastjson.JSON;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.yis.comm.Config;
 import org.yis.comm.Const;
 import org.yis.export.Caller;
 import org.yis.export.Export;
-import org.yis.util.DateUtil;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.Map;
 
 /**
@@ -20,7 +22,14 @@ import java.util.Map;
  */
 public class FileExport implements Export {
 
+    private static final Logger logger = LogManager.getLogger(FileExport.class);
+
+    private String lineBreak;
     private String dir;
+    private FileOutputStream fos = null;
+    private FileChannel oChannel = null;
+    private ByteBuffer buf = null;
+    private boolean isFirst;
 
     public FileExport() {
         init();
@@ -29,61 +38,66 @@ public class FileExport implements Export {
     @Override
     public void init() {
         this.dir = Config.path;
+        this.isFirst = true;
+        this.lineBreak = Const.LINE_BREAK;
     }
 
     @Override
     public void send(Caller caller) {
         Map<String, Object> event = caller.convert();
-        String str = JSON.toJSONString(event);
+        String content = JSON.toJSONString(event);
+        // fileChannel 写入
         // TODO 双缓冲区机制, 单位时间内缓冲区没满, 清空缓冲区写入文件
-//        String file = String.format(Const.INDEX, dir, DateUtil.getDate());
-//        File log = new File(file);
-//        appendLog(log, str);
+        appendLog(content);
     }
 
     @Override
     public void release() {
-
-    }
-
-    private void appendLog(File log, String str) {
-        FileWriter fw = null;
-        PrintWriter pw = null;
         try {
-            if (!log.exists()) {
-                // 判断目录是否存在
-                judgeDirExist(log);
-                log.createNewFile();
-                fw = new FileWriter(log);
-            } else {
-                fw = new FileWriter(log, true);
-            }
-            pw = new PrintWriter(fw);
-            pw.println(str);
-            pw.flush();
-            Thread.sleep(500);
+            fos.close();
+            oChannel.close();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                fw.flush();
-                pw.close();
-                fw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            logger.error("FileExport release error, e={}", e);
+            throw new RuntimeException("关闭File输出失败");
+        }
+    }
+
+    private void appendLog(String content) {
+        try {
+            if (isFirst) {
+                buf = ByteBuffer.allocate(Const.BUFFER_SIZE);
+
+                File fileTemp = new File(dir);
+                // 判断父文件夹是否存在
+                File parent = fileTemp.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                // 判断要写入文件是否存在
+                if (!fileTemp.exists()) {
+                    fileTemp.createNewFile();
+                }
+
+                fos = new FileOutputStream(dir, Const.FILE_APPEND);
+
+                isFirst = false;
             }
 
+            oChannel = fos.getChannel();
+
+            buf.put(content.getBytes());
+            buf.put(lineBreak.getBytes());
+            buf.flip();
+
+            while (buf.hasRemaining()) {
+                oChannel.write(buf);
+            }
+
+            // buf压缩
+            buf.compact();
+        } catch (IOException e) {
+            logger.error("FileExport appendLog error, e={}", e);
         }
     }
-
-    private void judgeDirExist(File log) {
-        File parentDir = new File(log.getParent());
-        if (!parentDir.exists()) {
-            parentDir.mkdir();
-        }
-    }
-
 
 }
