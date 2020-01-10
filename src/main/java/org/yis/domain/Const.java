@@ -1,4 +1,4 @@
-package org.yis.comm;
+package org.yis.domain;
 
 /**
  * 公用变量

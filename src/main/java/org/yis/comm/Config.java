@@ -1,5 +1,7 @@
 package org.yis.comm;
 
+import org.yis.domain.enums.OutModuleEnum;
+
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**

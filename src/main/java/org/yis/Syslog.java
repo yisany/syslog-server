@@ -8,7 +8,7 @@ import org.yis.handler.BaseHandler;
 /**
  * Aim: 程序主入口
  * Author milu
- * Version: v1.0.0
+ * Version: v3.0.1
  */
 public class Syslog {
 

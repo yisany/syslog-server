@@ -3,7 +3,7 @@ package org.yis.handler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yis.comm.Config;
-import org.yis.comm.ProtocolEnum;
+import org.yis.domain.enums.ProtocolEnum;
 import org.yis.comm.ShutDownHook;
 
 /**

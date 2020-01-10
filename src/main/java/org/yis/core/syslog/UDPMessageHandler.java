@@ -6,7 +6,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yis.handler.OutputHandler;
+import org.yis.domain.DoubleBufferQueue;
+import org.yis.domain.Message;
+import org.yis.util.DateUtil;
 
 import java.net.InetAddress;
 
@@ -30,10 +32,9 @@ public class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
         //信息初始化
         InetAddress ip = message.sender().getAddress();
         int port = message.sender().getPort();
-
-//        Message mmsg = Utils.initMessage(ip, port, body);
-
-        // 置入Input内存队列
-        OutputHandler.pushToOut(body, ip, port);
+        String timestamp = DateUtil.getUTC(System.currentTimeMillis());
+        // 置入队列
+        Message msg = new Message(ip, port, body, timestamp);
+        DoubleBufferQueue.getInstance().push(msg);
     }
 }

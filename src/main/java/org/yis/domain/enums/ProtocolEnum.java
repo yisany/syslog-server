@@ -1,4 +1,4 @@
-package org.yis.comm;
+package org.yis.domain.enums;
 
 /**
  * March, or die.

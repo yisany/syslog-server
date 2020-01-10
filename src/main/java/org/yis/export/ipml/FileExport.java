@@ -4,9 +4,10 @@ import com.alibaba.fastjson.JSON;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yis.comm.Config;
-import org.yis.comm.Const;
+import org.yis.domain.Const;
 import org.yis.export.Caller;
 import org.yis.export.Export;
+import org.yis.util.BizException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,7 +48,6 @@ public class FileExport implements Export {
         Map<String, Object> event = caller.convert();
         String content = JSON.toJSONString(event);
         // fileChannel 写入
-        // TODO 双缓冲区机制, 单位时间内缓冲区没满, 清空缓冲区写入文件
         appendLog(content);
     }
 
@@ -58,7 +58,7 @@ public class FileExport implements Export {
             oChannel.close();
         } catch (IOException e) {
             logger.error("FileExport release error, e={}", e);
-            throw new RuntimeException("关闭File输出失败");
+            throw new BizException("关闭File输出失败");
         }
     }
 

@@ -5,7 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yis.handler.OutputHandler;
+import org.yis.domain.DoubleBufferQueue;
+import org.yis.domain.Message;
+import org.yis.util.DateUtil;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -30,10 +32,9 @@ public class TCPMessageHandler extends ChannelInboundHandlerAdapter {
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         InetAddress ip = insocket.getAddress();
         int port = insocket.getPort();
-
-//        Message mmsg = Utils.initMessage(ip, port, body);
-
-        //置入内存队列
-        OutputHandler.pushToOut(body, ip, port);
+        String timestamp = DateUtil.getUTC(System.currentTimeMillis());
+        // 置入队列
+        Message msg = new Message(ip, port, body, timestamp);
+        DoubleBufferQueue.getInstance().push(msg);
     }
 }

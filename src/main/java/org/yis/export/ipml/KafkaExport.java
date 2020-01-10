@@ -9,6 +9,7 @@ import org.yis.comm.Config;
 import org.yis.core.kafka.JKafkaProducer;
 import org.yis.export.Caller;
 import org.yis.export.Export;
+import org.yis.util.BizException;
 
 import java.util.Map;
 import java.util.Properties;
@@ -56,7 +57,7 @@ public class KafkaExport implements Export {
             producer = JKafkaProducer.init(props);
         } catch (Exception e) {
             logger.error("kafka producer init error", e);
-            throw new RuntimeException("kafka producer init error");
+            throw new BizException("kafka producer init error");
         }
     }
 

@@ -2,6 +2,7 @@ package org.yis.comm;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.yis.domain.enums.OutModuleEnum;
 import org.yis.export.Export;
 import org.yis.handler.OutputHandler;
 
@@ -37,15 +38,15 @@ public class ShutDownHook {
 
         @Override
         public void run() {
-            // 关闭input线程
-            Config.executor.shutdown();
-            logger.info("In Module is shutdown.");
             // 关闭output模块
             ConcurrentHashMap<OutModuleEnum, Export> outClass = OutputHandler.getOutClass();
             for (Map.Entry<OutModuleEnum, Export> entry : outClass.entrySet()) {
                 entry.getValue().release();
                 logger.info("Out Module:{}, Service:{} is shutdown.", entry.getKey(), entry.getValue().getClass().getName());
             }
+            // 关闭线程池
+            Config.executor.shutdown();
+            logger.info("ThreadPool is shutdown.");
         }
     }
 

@@ -12,7 +12,7 @@ import io.netty.handler.ssl.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yis.comm.ProtocolEnum;
+import org.yis.domain.enums.ProtocolEnum;
 import org.yis.core.syslog.SyslogTCPInitializer;
 import org.yis.core.syslog.SyslogTLSInitializer;
 import org.yis.core.syslog.UDPMessageHandler;
