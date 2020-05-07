@@ -4,7 +4,7 @@
 
     <groupId>com.yis</groupId>
     <artifactId>syslog-server</artifactId>
-    <version>3.0.1</version>
+    <version>3.1.1</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -119,6 +119,12 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.palindromicity</groupId>
+            <artifactId>simple-syslog</artifactId>
+            <version>0.0.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -166,7 +172,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
-                    <mainClass>org.yis.Syslog</mainClass>
+                    <mainClass>com.yis.syslog.Syslog</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -194,7 +200,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.yis.Syslog</mainClass>
+                                    <mainClass>com.yis.syslog.Syslog</mainClass>
                                 </transformer>
                             </transformers>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
