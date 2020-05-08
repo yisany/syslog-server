@@ -55,11 +55,8 @@ public class OutputHandler {
     public void pushToOut() {
 
         Config.executor.execute(() -> {
-            DoubleBufferQueue outQueue = DoubleBufferQueue.getInstance();
-
             while (true) {
-                List<Message> rList = DoubleBufferQueue.ready(outQueue);
-
+                List<Message> rList = DoubleBufferQueue.ready(DoubleBufferQueue.getInstance());
                 for (Message msg : rList) {
                     switch (Config.out) {
                         case ALL:
