@@ -6,6 +6,7 @@ import com.yis.syslog.domain.OutputOptions;
 import com.yis.syslog.domain.qlist.OutputQueueList;
 import com.yis.syslog.output.impl.file.FileOutput;
 import com.yis.syslog.output.impl.kafka.KafkaOutput;
+import com.yis.syslog.output.impl.stdout.StdoutOutput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,6 +38,11 @@ public class OutputFactory {
             String module = entry.getKey();
             Map<String, Object> conf = (Map<String, Object>) entry.getValue();
             switch (module) {
+                case "stdout":
+                    logger.info("output module:[stdout] is working");
+                    StdoutOutput stdoutSender = new StdoutOutput();
+                    outputs.add(stdoutSender);
+                    break;
                 case "file":
                     logger.info("output module:[file] is working");
                     OutputOptions.FileOption file = new OutputOptions.FileOption();
@@ -52,7 +58,6 @@ public class OutputFactory {
                     outputs.add(kafkaSender);
                     break;
                 default:
-                    System.out.println("default");
                     break;
             }
         }

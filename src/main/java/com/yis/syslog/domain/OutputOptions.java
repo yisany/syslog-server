@@ -11,6 +11,15 @@ public interface OutputOptions {
 
     OutputOptions convert(Map<String, Object> conf, OutputOptions option);
 
+    class StdoutOption implements OutputOptions {
+
+        @Override
+        public OutputOptions convert(Map<String, Object> conf, OutputOptions option) {
+            StdoutOption stdout = (StdoutOption) option;
+            return stdout;
+        }
+    }
+
     @Data
     class FileOption implements OutputOptions {
         private String path;
