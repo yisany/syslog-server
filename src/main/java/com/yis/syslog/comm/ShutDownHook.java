@@ -1,13 +1,13 @@
 package com.yis.syslog.comm;
 
-import com.yis.syslog.domain.enums.OutModuleEnum;
-import com.yis.syslog.output.OutputHandler;
-import com.yis.syslog.output.Sender;
+import com.yis.syslog.domain.qlist.InputQueueList;
+import com.yis.syslog.domain.qlist.OutputQueueList;
+import com.yis.syslog.input.Input;
+import com.yis.syslog.output.Output;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 /**
  * March, or die.
@@ -19,15 +19,20 @@ public class ShutDownHook {
 
     private static final Logger logger = LogManager.getLogger(ShutDownHook.class);
 
-    public ShutDownHook() {
+    private InputQueueList initInputQueueList;
+    private OutputQueueList initOutputQueueList;
+    private List<Output> allBaseOutputs;
+    private List<Input> allBaseInputs;
 
+    public ShutDownHook(InputQueueList initInputQueueList, OutputQueueList initOutputQueueList, List<Input> allBaseInputs, List<Output> allBaseOutputs) {
+        this.initInputQueueList = initInputQueueList;
+        this.initOutputQueueList = initOutputQueueList;
+        this.allBaseInputs = allBaseInputs;
+        this.allBaseOutputs = allBaseOutputs;
     }
 
-    /**
-     * 初始化
-     */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void init() {
+    public void addShutDownHook() {
         Thread shut = new Thread(new ShutDownHookThread());
         shut.setDaemon(true);
         Runtime.getRuntime().addShutdownHook(shut);
@@ -38,15 +43,40 @@ public class ShutDownHook {
 
         @Override
         public void run() {
-            // 关闭output模块
-            ConcurrentHashMap<OutModuleEnum, Sender> outClass = OutputHandler.getOutClass();
-            for (Map.Entry<OutModuleEnum, Sender> entry : outClass.entrySet()) {
-                entry.getValue().release();
-                logger.info("Out Module:{}, Service:{} is shutdown.", entry.getKey(), entry.getValue().getClass().getName());
+            inputRelease();
+            if (initInputQueueList != null) {
+                initInputQueueList.ququeRelease();
             }
-            // 关闭线程池
-            Config.executor.shutdown();
-            logger.info("ThreadPool is shutdown.");
+            if (initOutputQueueList != null) {
+                initOutputQueueList.ququeRelease();
+            }
+            outPutRelease();
+        }
+
+        private void inputRelease() {
+            try {
+                if (allBaseOutputs != null) {
+                    for (Input input : allBaseInputs) {
+                        input.release();
+                    }
+                }
+                logger.warn("inputRelease success...");
+            } catch (Exception e) {
+                logger.error("inputRelease error:{}", e.getMessage());
+            }
+        }
+
+        private void outPutRelease() {
+            try {
+                if (allBaseOutputs != null) {
+                    for (Output outPut : allBaseOutputs) {
+                        outPut.release();
+                    }
+                }
+                logger.warn("outPutRelease success...");
+            } catch (Exception e) {
+                logger.error("outPutRelease error:{}", e.getMessage());
+            }
         }
     }
 

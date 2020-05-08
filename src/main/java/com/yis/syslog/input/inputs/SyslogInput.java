@@ -1,11 +1,10 @@
 package com.yis.syslog.input.inputs;
 
-import com.yis.syslog.domain.DoubleBufferQueue;
-import com.yis.syslog.domain.Message;
 import com.yis.syslog.domain.enums.ProtocolEnum;
 import com.yis.syslog.domain.qlist.InputQueueList;
+import com.yis.syslog.input.Input;
 import com.yis.syslog.util.DateUtil;
-import com.yis.syslog.util.TrustEveryoneTrustManager;
+import com.yis.syslog.comm.TrustEveryoneTrustManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -19,11 +18,8 @@ import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.ClientAuth;
-import io.netty.handler.ssl.JdkSslContext;
-import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +28,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.HashMap;
@@ -45,7 +40,7 @@ import java.util.Map;
  * Author milu
  * Version: v1.0.0
  */
-public class SyslogInput {
+public class SyslogInput implements Input {
 
     private static final Logger logger = LogManager.getLogger(SyslogInput.class);
 
@@ -57,22 +52,39 @@ public class SyslogInput {
     private EventLoopGroup workerGroup;
 
     private SSLContext sslContext;
+    private JdkSslContext context;
 
     private static InputQueueList inputQueueList;
 
     public SyslogInput(int port, ProtocolEnum protocol) {
         this.port = port;
         this.protocol = protocol;
+
+        prepare();
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public ProtocolEnum getProtocol() {
+        return protocol;
     }
 
     public static void setInputQueueList(InputQueueList inputQueueList) {
         SyslogInput.inputQueueList = inputQueueList;
     }
 
-    /**
-     * 监听服务
-     */
-    public void listen() {
+    @Override
+    public void prepare() {
+        if (ProtocolEnum.TLS == protocol) {
+            SSLContext sslContext = getSslContext();
+            context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
+        }
+    }
+
+    @Override
+    public void emit() {
         switch (protocol) {
             case UDP:
                 logger.info("Syslog_UDP_Monitor is running...");
@@ -84,13 +96,24 @@ public class SyslogInput {
                 break;
             case TLS:
                 logger.info("Syslog_TLS_Monitor is running...");
-                SSLContext sslContext = getSslContext();
-                JdkSslContext context = new JdkSslContext(sslContext, false, ClientAuth.NONE);
                 tls(port, context);
                 break;
             default:
                 logger.info("Input error !!!");
                 System.exit(-1);
+        }
+    }
+
+    @Override
+    public void release() {
+        if (group != null) {
+            group.shutdownGracefully();
+        }
+        if (bossGroup != null) {
+            bossGroup.shutdownGracefully();
+        }
+        if (workerGroup != null) {
+            workerGroup.shutdownGracefully();
         }
     }
 

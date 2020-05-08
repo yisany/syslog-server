@@ -1,4 +1,4 @@
-package com.yis.syslog.output.impl.core;
+package com.yis.syslog.output.impl.kafka;
 
 import com.yis.syslog.util.ThreadPool;
 import org.apache.kafka.clients.producer.*;
@@ -41,8 +41,8 @@ public class JKafkaProducer {
     }
 
     public void sendWithRetry(String topic, String key, String value) {
-        while(!this.queue.isEmpty()) {
-            this.sendWithBlock(topic, key, (String)this.queue.poll());
+        while (!this.queue.isEmpty()) {
+            this.sendWithBlock(topic, key, (String) this.queue.poll());
         }
 
         this.sendWithBlock(topic, key, value);
@@ -82,7 +82,7 @@ public class JKafkaProducer {
         int var9 = propsFields.length;
 
 
-        for(int i = 0; i < var9; ++i) {
+        for (int i = 0; i < var9; ++i) {
             String field = var8[i];
             String[] propsKV = field.split("=");
             props.put(propsKV[0], propsKV[1]);
@@ -91,21 +91,21 @@ public class JKafkaProducer {
         final JKafkaProducer p = init(props);
         final StringBuffer strBuf = new StringBuffer();
 
-        for(int i = 0; i < recordSize; ++i) {
+        for (int i = 0; i < recordSize; ++i) {
             strBuf.append(i + "");
             if (strBuf.length() > recordSize) {
                 break;
             }
         }
 
-        final long num = (long)(recordNum / concurrent);
+        final long num = (long) (recordNum / concurrent);
         final CountDownLatch cc = new CountDownLatch(concurrent);
 
-        for(int i = 0; i < concurrent; ++i) {
+        for (int i = 0; i < concurrent; ++i) {
             threadPool.getExecutor().execute(new Runnable() {
                 public void run() {
                     try {
-                        for(int j = 0; (long)j < num; ++j) {
+                        for (int j = 0; (long) j < num; ++j) {
                             p.sendWithRetry(topic, j + "", strBuf.toString());
                         }
 
@@ -126,9 +126,9 @@ public class JKafkaProducer {
         }
 
         long end = System.currentTimeMillis();
-        long totalBytes = (long)(strBuf.toString().length() * recordNum);
+        long totalBytes = (long) (strBuf.toString().length() * recordNum);
         long avgBytes = totalBytes * 1000L / (end - start);
-        long avgNum = (long)(recordNum * 1000) / (end - start);
+        long avgNum = (long) (recordNum * 1000) / (end - start);
         System.out.println("waste time=" + (end - start));
         System.out.println("totalBytes=" + totalBytes);
         System.out.println("avgBytes=" + avgBytes);

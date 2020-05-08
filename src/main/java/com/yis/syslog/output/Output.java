@@ -8,33 +8,22 @@ import java.util.Map;
  * @Description:
  * @Created by yisany on 2020/01/07
  */
-public interface Sender {
+public interface Output {
 
     /**
      * 初始化
      */
-    void init();
-
-    /**
-     * 发送消息
-     * @param caller 消息处理逻辑
-     */
-    void send(Caller caller);
+    void prepare();
 
     /**
      * 关闭
      */
     void release();
 
+    /**
+     * 处理
+     * @param event
+     */
     void process(Map<String, Object> event);
-
-    interface Caller {
-
-        /**
-         * 数据处理
-         */
-        Map<String, Object> convert();
-
-    }
 
 }

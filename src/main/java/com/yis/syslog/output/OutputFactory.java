@@ -2,7 +2,10 @@ package com.yis.syslog.output;
 
 import com.google.common.base.Throwables;
 import com.yis.syslog.OptionsProcessor;
+import com.yis.syslog.domain.OutputOptions;
 import com.yis.syslog.domain.qlist.OutputQueueList;
+import com.yis.syslog.output.impl.file.FileOutput;
+import com.yis.syslog.output.impl.kafka.KafkaOutput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,27 +21,52 @@ import java.util.concurrent.Executors;
  */
 public class OutputFactory {
 
-    public static void initOutputInstances(OutputQueueList outputQueueList, List<Sender> allBaseOutputs) {
+    public static void initOutputInstances(OutputQueueList outputQueueList, List<Output> allBaseOutputs) {
         // 获取输出对象
         Map<String, Object> outputConfig = OptionsProcessor.getInstance().getOutputConfig();
-        OutputThread.initOutputThread(outputConfig, outputQueueList, allBaseOutputs);
+        if (outputConfig != null) {
+            OutputThread.initOutputThread(outputConfig, outputQueueList, allBaseOutputs);
+        }
     }
 
-    private static List<Sender> getBatchInstance(Map<String, Object> outputConfig) {
-        // TODO 构建sender
-        return new ArrayList<>();
+    private static List<Output> getBatchInstance(Map<String, Object> outputConfig) {
+        List<Output> outputs = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : outputConfig.entrySet()) {
+            String module = entry.getKey();
+            Map<String, Object> conf = (Map<String, Object>) entry.getValue();
+            switch (module) {
+                case "file":
+                    System.out.println("file");
+                    OutputOptions.FileOption file = new OutputOptions.FileOption();
+                    file.convert(conf, file);
+                    FileOutput fileSender = new FileOutput(file);
+                    outputs.add(fileSender);
+                    break;
+                case "kafka":
+                    System.out.println("kafka");
+                    OutputOptions.KafkaOption kafka = new OutputOptions.KafkaOption();
+                    kafka.convert(conf, kafka);
+                    KafkaOutput kafkaSender = new KafkaOutput(kafka);
+                    outputs.add(kafkaSender);
+                    break;
+                default:
+                    System.out.println("default");
+                    break;
+            }
+        }
+        return outputs;
     }
 
     private static class OutputThread implements Runnable {
 
         private static final Logger logger = LogManager.getLogger(OutputThread.class);
 
-        private List<Sender> outputProcessors;
+        private List<Output> outputProcessors;
         private BlockingQueue<Map<String, Object>> outputQueue;
 
         private static ExecutorService outputExecutor;
 
-        public OutputThread(List<Sender> outputProcessors, BlockingQueue<Map<String, Object>> outputQueue) {
+        public OutputThread(List<Output> outputProcessors, BlockingQueue<Map<String, Object>> outputQueue) {
             this.outputProcessors = outputProcessors;
             this.outputQueue = outputQueue;
         }
@@ -52,7 +80,7 @@ public class OutputFactory {
                     if (!priorityFail()) {
                         event = this.outputQueue.take();
                         if (event != null) {
-                            for (Sender bo : outputProcessors) {
+                            for (Output bo : outputProcessors) {
                                 bo.process(event);
                             }
                         }
@@ -65,6 +93,7 @@ public class OutputFactory {
 
         /**
          * 优先处理失败信息
+         *
          * @return true: 存在失败信息
          */
         private boolean priorityFail() {
@@ -72,12 +101,12 @@ public class OutputFactory {
             return false;
         }
 
-        public static void initOutputThread(Map<String, Object> outputConfig, OutputQueueList outputQueueList, List<Sender> allBaseOutputs) {
+        public static void initOutputThread(Map<String, Object> outputConfig, OutputQueueList outputQueueList, List<Output> allBaseOutputs) {
             if (outputExecutor == null) {
                 outputExecutor = Executors.newFixedThreadPool(outputQueueList.getQueueList().size());
             }
             for (BlockingQueue<Map<String, Object>> queueList : outputQueueList.getQueueList()) {
-                List<Sender> baseOutputs = getBatchInstance(outputConfig);
+                List<Output> baseOutputs = getBatchInstance(outputConfig);
                 allBaseOutputs.addAll(baseOutputs);
                 outputExecutor.execute(new OutputThread(baseOutputs, queueList));
             }

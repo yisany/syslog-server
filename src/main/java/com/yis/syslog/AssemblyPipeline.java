@@ -5,9 +5,10 @@ import com.yis.syslog.comm.ShutDownHook;
 import com.yis.syslog.domain.qlist.InputQueueList;
 import com.yis.syslog.domain.qlist.OutputQueueList;
 import com.yis.syslog.filter.FilterFactory;
+import com.yis.syslog.input.Input;
 import com.yis.syslog.input.InputFactory;
 import com.yis.syslog.output.OutputFactory;
-import com.yis.syslog.output.Sender;
+import com.yis.syslog.output.Output;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,7 +32,8 @@ public class AssemblyPipeline {
     private InputQueueList initInputQueueList;
     private OutputQueueList initOutputQueueList;
 
-    private List<Sender> allBaseOutputs = Lists.newCopyOnWriteArrayList();
+    private List<Input> allBaseInputs = Lists.newCopyOnWriteArrayList();
+    private List<Output> allBaseOutputs = Lists.newCopyOnWriteArrayList();
 
     public static AssemblyPipeline getInstance() {
         if (!Optional.ofNullable(pipeline).isPresent()) {
@@ -55,7 +57,7 @@ public class AssemblyPipeline {
         initInputQueueList = InputQueueList.getInputQueueListInstance(1, 10000);
         initOutputQueueList = OutputQueueList.getOutPutQueueListInstance(1, 10000);
 
-        InputFactory.initInputInstances(initInputQueueList);
+        InputFactory.initInputInstances(initInputQueueList, allBaseInputs);
         FilterFactory.initFilterInstances(initInputQueueList, initOutputQueueList);
         OutputFactory.initOutputInstances(initOutputQueueList, allBaseOutputs);
 
@@ -67,8 +69,8 @@ public class AssemblyPipeline {
      * 资源释放
      */
     private void addShutDownHook() {
-        ShutDownHook hook = new ShutDownHook();
-        hook.init();
+        ShutDownHook hook = new ShutDownHook(initInputQueueList, initOutputQueueList,allBaseInputs, allBaseOutputs);
+        hook.addShutDownHook();
     }
 
 

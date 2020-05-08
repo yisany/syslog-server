@@ -1,14 +1,13 @@
 package com.yis.syslog.output.impl.kafka;
 
 import com.alibaba.fastjson.JSON;
-import com.yis.syslog.comm.Config;
-import com.yis.syslog.output.Sender;
+import com.yis.syslog.comm.BizException;
+import com.yis.syslog.domain.OutputOptions;
+import com.yis.syslog.output.Output;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.yis.syslog.output.impl.core.JKafkaProducer;
-import com.yis.syslog.util.BizException;
 
 import java.util.Map;
 import java.util.Properties;
@@ -19,9 +18,9 @@ import java.util.UUID;
  * @Description kafka producer
  * @createTime 2019年12月12日 13:48:00
  */
-public class KafkaSender implements Sender {
+public class KafkaOutput implements Output {
 
-    private static final Logger logger = LogManager.getLogger(KafkaSender.class);
+    private static final Logger logger = LogManager.getLogger(KafkaOutput.class);
 
     private static JKafkaProducer producer;
 
@@ -30,20 +29,16 @@ public class KafkaSender implements Sender {
     private Map<String, String> properties;
     private String topic;
 
-    public KafkaSender() {
-        init();
-    }
-
-    @Override
-    public void init() {
-        this.bootstrapServers = Config.kafka.getBootstrapServers();
-        this.topic = Config.kafka.getTopics();
-        this.properties = Config.kafka.getProducerSettings();
+    public KafkaOutput(OutputOptions.KafkaOption option) {
+        this.bootstrapServers = option.getBootstrapServers();
+        this.topic = option.getTopics();
+        this.properties = option.getProducerSettings();
 
         prepare();
     }
 
-    private void prepare() {
+    @Override
+    public void prepare() {
         try {
 
             if (props == null) {
@@ -68,17 +63,6 @@ public class KafkaSender implements Sender {
 
     @Override
     public void process(Map<String, Object> event) {
-
-    }
-
-    /**
-     * 生产消息 -> kafka
-     * @param caller
-     */
-    @Override
-    public void send(Caller caller) {
-        Map<String, Object> event = caller.convert();
-        logger.debug("push to kafka, event={}", event);
         producer.sendWithRetry(topic, UUID.randomUUID().toString(), JSON.toJSONString(event));
     }
 

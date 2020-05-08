@@ -1,5 +1,6 @@
 package com.yis.syslog.util;
 
+import com.yis.syslog.comm.BizException;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

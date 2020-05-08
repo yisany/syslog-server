@@ -8,8 +8,9 @@ input:
 ### 导出设置
 ### file,kafka可以选其一, 也可以都用
 ### 用哪个就写哪个, 不用的就可以不写
-export:
-  file: "/Users/milu/data/tmp/syslog/temp.txt"
+output:
+  file:
+    path: "/Users/milu/data/tmp/syslog/temp.txt"
   kafka:
     bootstrapServers: "localhost:9092"
     zkAddress: "localhost:2181/kafka"
