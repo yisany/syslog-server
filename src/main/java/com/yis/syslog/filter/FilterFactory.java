@@ -1,6 +1,7 @@
 package com.yis.syslog.filter;
 
 import com.google.common.base.Throwables;
+import com.yis.syslog.OptionsProcessor;
 import com.yis.syslog.domain.qlist.InputQueueList;
 import com.yis.syslog.domain.qlist.OutputQueueList;
 import com.yis.syslog.filter.filters.SyslogMessageParser;
@@ -67,7 +68,7 @@ public class FilterFactory{
                 filterExecutor = Executors.newFixedThreadPool(inputQueueList.getQueueList().size());
             }
             for (BlockingQueue<Map<String, Object>> queueList : inputQueueList.getQueueList()) {
-                SyslogMessageParser parser = new SyslogMessageParser();
+                SyslogMessageParser parser = new SyslogMessageParser(OptionsProcessor.getInstance().getFilterConfig());
                 filterExecutor.execute(new FilterThread(parser, queueList));
             }
         }

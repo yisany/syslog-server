@@ -1,6 +1,7 @@
 package com.yis.syslog;
 
 import com.yis.syslog.domain.InputOptions;
+import com.yis.syslog.domain.enums.SyslogProtocolEnum;
 import com.yis.syslog.util.CliUtil;
 import com.yis.syslog.util.YamlUtil;
 import org.apache.logging.log4j.LogManager;
@@ -51,6 +52,21 @@ public class OptionsProcessor {
             }
         }
         return InputOptions.convert(new HashMap<>());
+    }
+
+    /**
+     * 获取解析配置
+     * @return
+     */
+    public SyslogProtocolEnum getFilterConfig() {
+        if (configs.containsKey("filter")) {
+            Map<String, Object> filters = (Map<String, Object>) configs.get("filter");
+            if (filters.containsKey("protocol")) {
+                String proto = filters.get("protocol").toString();
+                return SyslogProtocolEnum.get(proto);
+            }
+        }
+        return SyslogProtocolEnum.UNKNOWN;
     }
 
     /**
