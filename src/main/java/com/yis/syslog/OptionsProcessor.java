@@ -75,8 +75,7 @@ public class OptionsProcessor {
         // 获取配置文件地址
         Map<String, String> comms = CliUtil.parseCli(args, "c");
         // 初始化配置
-        Map<String, Object> yamlMap = YamlUtil.parseYaml(comms.get("c"));
-        configs.put("config", yamlMap);
+        configs = YamlUtil.parseYaml(comms.get("c"));
     }
 
 }

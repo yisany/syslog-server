@@ -37,6 +37,7 @@ public class InputQueueList extends QueueList {
         if (inputQueueList != null) {
             return inputQueueList;
         }
+        inputQueueList = new InputQueueList();
         for (int i = 0; i < queueNumber; i++) {
             inputQueueList.queueList.add(new ArrayBlockingQueue<>(queueSize));
         }

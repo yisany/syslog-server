@@ -1,7 +1,6 @@
 package com.yis.syslog.domain.qlist;
 
 import com.google.common.collect.Lists;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.List;
 import java.util.Map;

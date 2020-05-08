@@ -21,6 +21,8 @@ import java.util.concurrent.Executors;
  */
 public class OutputFactory {
 
+    private static final Logger logger = LogManager.getLogger(OutputFactory.class);
+
     public static void initOutputInstances(OutputQueueList outputQueueList, List<Output> allBaseOutputs) {
         // 获取输出对象
         Map<String, Object> outputConfig = OptionsProcessor.getInstance().getOutputConfig();
@@ -36,14 +38,14 @@ public class OutputFactory {
             Map<String, Object> conf = (Map<String, Object>) entry.getValue();
             switch (module) {
                 case "file":
-                    System.out.println("file");
+                    logger.info("output module:[file] is working");
                     OutputOptions.FileOption file = new OutputOptions.FileOption();
                     file.convert(conf, file);
                     FileOutput fileSender = new FileOutput(file);
                     outputs.add(fileSender);
                     break;
                 case "kafka":
-                    System.out.println("kafka");
+                    logger.info("output module:[kafka] is working");
                     OutputOptions.KafkaOption kafka = new OutputOptions.KafkaOption();
                     kafka.convert(conf, kafka);
                     KafkaOutput kafkaSender = new KafkaOutput(kafka);

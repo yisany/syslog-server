@@ -11,8 +11,8 @@ input:
 output:
   file:
     path: "/Users/milu/data/tmp/syslog/temp.txt"
-  kafka:
-    bootstrapServers: "localhost:9092"
-    zkAddress: "localhost:2181/kafka"
-    topics: "milu_test"
-    producerSettings: {"max.request.size":"20971520","compression.type":"lz4","request.timeout.ms":"86400000","retries":"1000000","max.in.flight.requests.per.connection":"1"}
+#  kafka:
+#    bootstrapServers: "localhost:9092"
+#    zkAddress: "localhost:2181/kafka"
+#    topics: "milu_test"
+#    producerSettings: {"max.request.size":"20971520","compression.type":"lz4","request.timeout.ms":"86400000","retries":"1000000","max.in.flight.requests.per.connection":"1"}
