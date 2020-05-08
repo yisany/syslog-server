@@ -1,28 +1,42 @@
-package com.yis.syslog.reader;
+package com.yis.syslog.input.inputs;
 
-import com.yis.syslog.reader.syslog.SyslogTCPInitializer;
-import com.yis.syslog.reader.syslog.SyslogTLSInitializer;
-import com.yis.syslog.reader.syslog.UDPMessageHandler;
+import com.yis.syslog.domain.DoubleBufferQueue;
+import com.yis.syslog.domain.Message;
 import com.yis.syslog.domain.enums.ProtocolEnum;
+import com.yis.syslog.domain.qlist.InputQueueList;
+import com.yis.syslog.util.DateUtil;
 import com.yis.syslog.util.TrustEveryoneTrustManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramPacket;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.*;
+import io.netty.handler.ssl.ClientAuth;
+import io.netty.handler.ssl.JdkSslContext;
+import io.netty.handler.ssl.SslHandler;
 import org.apache.commons.io.IOUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Aim: Netty版Server
@@ -31,9 +45,9 @@ import java.security.KeyStore;
  * Author milu
  * Version: v1.0.0
  */
-public class InputHandler {
+public class SyslogInput {
 
-    private static final Logger logger = LogManager.getLogger(InputHandler.class);
+    private static final Logger logger = LogManager.getLogger(SyslogInput.class);
 
     private int port;
     private ProtocolEnum protocol;
@@ -44,16 +58,22 @@ public class InputHandler {
 
     private SSLContext sslContext;
 
-    public InputHandler(int port, ProtocolEnum protocol) {
+    private static InputQueueList inputQueueList;
+
+    public SyslogInput(int port, ProtocolEnum protocol) {
         this.port = port;
         this.protocol = protocol;
+    }
+
+    public static void setInputQueueList(InputQueueList inputQueueList) {
+        SyslogInput.inputQueueList = inputQueueList;
     }
 
     /**
      * 监听服务
      */
     public void listen() {
-        switch (protocol){
+        switch (protocol) {
             case UDP:
                 logger.info("Syslog_UDP_Monitor is running...");
                 udp(port);
@@ -76,19 +96,20 @@ public class InputHandler {
 
     /**
      * tls证书认证
+     *
      * @return
      */
-    private SSLContext getSslContext(){
+    private SSLContext getSslContext() {
         try {
             // keystore的类型，默认是jks
             final KeyStore keyStore = KeyStore.getInstance("JKS");
             final InputStream is = getClass().getResourceAsStream("/server.keystore");
-            if (is == null){
-                logger.error("InputHandler keystore not found.");
+            if (is == null) {
+                logger.error("SyslogInput keystore not found.");
             }
             final char[] keystorePwd = "123456".toCharArray();
             try {
-                keyStore.load(is,keystorePwd);
+                keyStore.load(is, keystorePwd);
             } finally {
                 IOUtils.closeQuietly(is);
             }
@@ -100,15 +121,16 @@ public class InputHandler {
             // 构造SSL环境，指定SSL版本为TLS
             sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory.getKeyManagers(),
-                    new TrustManager[] { new TrustEveryoneTrustManager() }, null);
-        } catch (Exception  e) {
-            logger.error("InputHandler.getSslContext warning, e={}", e);
+                    new TrustManager[]{new TrustEveryoneTrustManager()}, null);
+        } catch (Exception e) {
+            logger.error("SyslogInput.getSslContext warning, e={}", e);
         }
         return sslContext;
     }
 
     /**
      * udp
+     *
      * @param port
      */
     private void udp(int port) {
@@ -120,7 +142,7 @@ public class InputHandler {
             b.handler(new UDPMessageHandler());
             b.bind(port).sync().channel().closeFuture().await();
         } catch (InterruptedException e) {
-            logger.error("InputHandler.udp warning, e={}", e);
+            logger.error("SyslogInput.udp warning, e={}", e);
         } finally {
             group.shutdownGracefully();
         }
@@ -128,22 +150,30 @@ public class InputHandler {
 
     /**
      * tcp
+     *
      * @param port
      */
-    private void tcp(int port){
+    private void tcp(int port) {
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new SyslogTCPInitializer())
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
+                            ch.pipeline().addLast(new StringDecoder());
+                            ch.pipeline().addLast(new TCPMessageHandler());
+                        }
+                    })
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("InputHandler.tcp warning, e={}", e);
+            logger.error("SyslogInput.tcp warning, e={}", e);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
@@ -152,6 +182,7 @@ public class InputHandler {
 
     /**
      * tls
+     *
      * @param port
      */
     private void tls(int port, JdkSslContext context) {
@@ -162,15 +193,59 @@ public class InputHandler {
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.DEBUG))
-                    .childHandler(new SyslogTLSInitializer(context))
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            SSLEngine sslEngine = context.newEngine(ch.alloc());
+                            ch.pipeline().addFirst("ssl", new SslHandler(sslEngine));
+
+                            ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
+                            ch.pipeline().addLast(new StringDecoder());
+                            ch.pipeline().addLast(new TCPMessageHandler());
+                        }
+                    })
                     .option(ChannelOption.SO_BACKLOG, 128);
             ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("InputHandler.tls warning, e={}", e);
+            logger.error("SyslogInput.tls warning, e={}", e);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+        }
+    }
+
+    private void process(String ip, int port, String message) {
+        Map<String, Object> event = new HashMap() {{
+            put("local_ip", ip);
+            put("local_port", port);
+            put("message", message);
+            put("@timestamp", DateUtil.getTimeNow());
+        }};
+        if (event != null && event.size() > 0) {
+            inputQueueList.put(event);
+        }
+    }
+
+    @ChannelHandler.Sharable
+    class TCPMessageHandler extends ChannelInboundHandlerAdapter {
+
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object body) {
+            InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
+            process(insocket.getAddress().getHostAddress(), insocket.getPort(), (String) body);
+        }
+    }
+
+    class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacket> {
+
+        @Override
+        protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket body) throws Exception {
+            ByteBuf buf = body.copy().content();
+            byte[] req = new byte[buf.readableBytes()];
+            buf.readBytes(req);
+            String message = new String(req, "UTF-8");
+            process(body.sender().getAddress().getHostAddress(), body.sender().getPort(), message);
         }
     }
 

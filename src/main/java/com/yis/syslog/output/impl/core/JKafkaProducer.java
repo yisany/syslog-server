@@ -1,4 +1,4 @@
-package com.yis.syslog.sender.impl.core;
+package com.yis.syslog.output.impl.core;
 
 import com.yis.syslog.util.ThreadPool;
 import org.apache.kafka.clients.producer.*;

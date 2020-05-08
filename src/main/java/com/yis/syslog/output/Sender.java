@@ -1,4 +1,4 @@
-package com.yis.syslog.sender;
+package com.yis.syslog.output;
 
 import java.util.Map;
 
@@ -25,6 +25,8 @@ public interface Sender {
      * 关闭
      */
     void release();
+
+    void process(Map<String, Object> event);
 
     interface Caller {
 

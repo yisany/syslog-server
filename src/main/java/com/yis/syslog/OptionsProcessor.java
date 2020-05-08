@@ -1,5 +1,8 @@
-package com.yis.syslog.comm;
+package com.yis.syslog;
 
+import com.yis.syslog.comm.Config;
+import com.yis.syslog.comm.KafkaConfig;
+import com.yis.syslog.domain.InputOptions;
 import com.yis.syslog.domain.enums.OutModuleEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,6 +10,8 @@ import com.yis.syslog.util.CliUtil;
 import com.yis.syslog.util.YamlUtil;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -17,26 +22,59 @@ import java.util.concurrent.TimeUnit;
  * @Description:
  * @Created by yisany on 2020/01/07
  */
-public class ParseOption {
+public class OptionsProcessor {
 
-    private static final Logger logger = LogManager.getLogger(ParseOption.class);
+    private static final Logger logger = LogManager.getLogger(OptionsProcessor.class);
 
-    private ParseOption() { }
+    private OptionsProcessor() { }
+
+    private static OptionsProcessor processor;
+
+    private Map<String, Object> configs = new ConcurrentHashMap<>();
+
+    public static OptionsProcessor getInstance() {
+        if (!Optional.ofNullable(processor).isPresent()) {
+            synchronized (OptionsProcessor.class) {
+                if (!Optional.ofNullable(processor).isPresent()) {
+                    processor = new OptionsProcessor();
+                }
+            }
+        }
+        return processor;
+    }
+
+    /**
+     * 获取输入配置
+     * @return
+     */
+    public InputOptions getInputConfig() {
+        Map<String, Integer> ports = (Map<String, Integer>) ((Map<String, Object>) configs.get("input")).get("port");
+        return InputOptions.convert(ports);
+    }
+
+    /**
+     * 获取输出配置
+     * @return
+     */
+    public Map<String, Object> getOutputConfig() {
+        return null;
+    }
 
     /**
      * 初始化
      * @param args
      */
-    public static void initConfig(String[] args) {
+    public void initConfig(String[] args) {
         logger.info("Checking config...");
-        ParseOption option = new ParseOption();
         // 初始化线程池
-        Config.executor = option.initFixedThreadPool(5);
+        Config.executor = initFixedThreadPool(5);
         // 获取配置文件地址
         Map<String, String> comms = CliUtil.parseCli(args, "c");
+        configs.put("config", comms);
+
         // 初始化配置
         Map<String, Object> yamlMap = YamlUtil.parseYaml(comms.get("c"));
-        option.parseConfigMap(yamlMap);
+        parseConfigMap(yamlMap);
     }
 
     /**

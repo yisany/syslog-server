@@ -1,11 +1,11 @@
-package com.yis.syslog.sender.impl.file;
+package com.yis.syslog.output.impl.file;
 
 import com.alibaba.fastjson.JSON;
 import com.yis.syslog.comm.Config;
 import com.yis.syslog.domain.Const;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.yis.syslog.sender.Sender;
+import com.yis.syslog.output.Sender;
 import com.yis.syslog.util.BizException;
 
 import java.io.File;
@@ -59,6 +59,11 @@ public class FileSender implements Sender {
             logger.error("FileSender release error, e={}", e);
             throw new BizException("关闭File输出失败");
         }
+    }
+
+    @Override
+    public void process(Map<String, Object> event) {
+
     }
 
     private void appendLog(String content) {

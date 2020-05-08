@@ -1,13 +1,13 @@
-package com.yis.syslog.sender.impl.kafka;
+package com.yis.syslog.output.impl.kafka;
 
 import com.alibaba.fastjson.JSON;
 import com.yis.syslog.comm.Config;
-import com.yis.syslog.sender.Sender;
+import com.yis.syslog.output.Sender;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.yis.syslog.sender.impl.core.JKafkaProducer;
+import com.yis.syslog.output.impl.core.JKafkaProducer;
 import com.yis.syslog.util.BizException;
 
 import java.util.Map;
@@ -64,6 +64,11 @@ public class KafkaSender implements Sender {
     public void release() {
         producer.close();
         logger.info("kafka producer release.");
+    }
+
+    @Override
+    public void process(Map<String, Object> event) {
+
     }
 
     /**

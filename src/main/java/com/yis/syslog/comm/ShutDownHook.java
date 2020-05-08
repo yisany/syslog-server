@@ -1,8 +1,8 @@
 package com.yis.syslog.comm;
 
 import com.yis.syslog.domain.enums.OutModuleEnum;
-import com.yis.syslog.sender.OutputHandler;
-import com.yis.syslog.sender.Sender;
+import com.yis.syslog.output.OutputHandler;
+import com.yis.syslog.output.Sender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

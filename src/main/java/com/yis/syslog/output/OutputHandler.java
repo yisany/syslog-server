@@ -1,11 +1,11 @@
-package com.yis.syslog.sender;
+package com.yis.syslog.output;
 
 import com.yis.syslog.comm.Config;
 import com.yis.syslog.domain.DoubleBufferQueue;
 import com.yis.syslog.domain.Message;
 import com.yis.syslog.domain.enums.OutModuleEnum;
-import com.yis.syslog.sender.impl.file.FileSender;
-import com.yis.syslog.sender.impl.kafka.KafkaSender;
+import com.yis.syslog.output.impl.file.FileSender;
+import com.yis.syslog.output.impl.kafka.KafkaSender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

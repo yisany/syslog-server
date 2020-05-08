@@ -1,8 +1,9 @@
 ### 端口设置
-port:
-  udp: 9897
-  tcp: 9898
-  tls: 9899
+input:
+  port:
+    udp: 9897
+    tcp: 9898
+    tls: 9899
 
 ### 导出设置
 ### file,kafka可以选其一, 也可以都用
