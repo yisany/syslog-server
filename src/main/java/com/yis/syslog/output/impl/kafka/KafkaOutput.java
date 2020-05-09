@@ -63,7 +63,7 @@ public class KafkaOutput implements Output {
 
     @Override
     public void process(Map<String, Object> event) {
-        producer.sendWithRetry(topic, UUID.randomUUID().toString(), JSON.toJSONString(event));
+        producer.sendWithRetry(topic, "", JSON.toJSONString(event));
     }
 
 }

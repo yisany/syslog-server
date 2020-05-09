@@ -1,6 +1,7 @@
 package com.yis.syslog.output.impl.kafka;
 
 import com.yis.syslog.util.ThreadPool;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +43,7 @@ public class JKafkaProducer {
 
     public void sendWithRetry(String topic, String key, String value) {
         while (!this.queue.isEmpty()) {
-            this.sendWithBlock(topic, key, (String) this.queue.poll());
+            this.sendWithBlock(topic, key, this.queue.poll());
         }
 
         this.sendWithBlock(topic, key, value);
@@ -50,17 +51,16 @@ public class JKafkaProducer {
 
     public void sendWithBlock(String topic, String key, final String value) {
         if (value != null) {
-            this.producer.send(new ProducerRecord(topic, key, value), new Callback() {
-                public void onCompletion(RecordMetadata metadata, Exception exception) {
-                    try {
-                        if (exception != null) {
-                            JKafkaProducer.this.queue.put(value);
-                            JKafkaProducer.logger.error("send data failed, wait to retry, value={},error={}", value, exception.getMessage());
-                            Thread.sleep(1000L);
-                        }
-                    } catch (InterruptedException var4) {
-                        JKafkaProducer.logger.error("kafka send callback error", var4);
+            ProducerRecord pr = StringUtils.isBlank(key) ? new ProducerRecord(topic, value) : new ProducerRecord(topic, key, value);
+            this.producer.send(pr, (metadata, exception) -> {
+                try {
+                    if (exception != null) {
+                        JKafkaProducer.this.queue.put(value);
+                        logger.error("send data failed, wait to retry, value={},error={}", value, exception.getMessage());
+                        Thread.sleep(1000L);
                     }
+                } catch (InterruptedException var4) {
+                    logger.error("kafka send callback error", var4);
                 }
             });
         }
@@ -74,66 +74,4 @@ public class JKafkaProducer {
         this.producer.flush();
     }
 
-    public static void perf(final String topic, String propsInfo, int recordNum, int recordSize, int concurrent) {
-        ThreadPool threadPool = new ThreadPool(concurrent, concurrent, "kafka-producer");
-        Properties props = new Properties();
-        String[] propsFields = propsInfo.split("&");
-        String[] var8 = propsFields;
-        int var9 = propsFields.length;
-
-
-        for (int i = 0; i < var9; ++i) {
-            String field = var8[i];
-            String[] propsKV = field.split("=");
-            props.put(propsKV[0], propsKV[1]);
-        }
-
-        final JKafkaProducer p = init(props);
-        final StringBuffer strBuf = new StringBuffer();
-
-        for (int i = 0; i < recordSize; ++i) {
-            strBuf.append(i + "");
-            if (strBuf.length() > recordSize) {
-                break;
-            }
-        }
-
-        final long num = (long) (recordNum / concurrent);
-        final CountDownLatch cc = new CountDownLatch(concurrent);
-
-        for (int i = 0; i < concurrent; ++i) {
-            threadPool.getExecutor().execute(new Runnable() {
-                public void run() {
-                    try {
-                        for (int j = 0; (long) j < num; ++j) {
-                            p.sendWithRetry(topic, j + "", strBuf.toString());
-                        }
-
-                        cc.countDown();
-                    } catch (Exception var2) {
-                        var2.printStackTrace();
-                    }
-
-                }
-            });
-        }
-
-        long start = System.currentTimeMillis();
-
-        try {
-            cc.await();
-        } catch (InterruptedException var23) {
-        }
-
-        long end = System.currentTimeMillis();
-        long totalBytes = (long) (strBuf.toString().length() * recordNum);
-        long avgBytes = totalBytes * 1000L / (end - start);
-        long avgNum = (long) (recordNum * 1000) / (end - start);
-        System.out.println("waste time=" + (end - start));
-        System.out.println("totalBytes=" + totalBytes);
-        System.out.println("avgBytes=" + avgBytes);
-        System.out.println("avgNum=" + avgNum);
-        p.close();
-        threadPool.shutdown();
-    }
 }
