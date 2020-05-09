@@ -1,50 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<Configuration status="off" monitorInterval="1800">
-
+<Configuration status="WARN" monitorInterval="1800">
     <properties>
+        <property name="LOG_LEVEL">INFO</property>
         <property name="LOG_HOME">./logs</property>
         <property name="ERROR_LOG_FILE_NAME">error</property>
+        <property name="INFO_LOG_FILE_NAME">info</property>
     </properties>
-
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d %-5p (%F:%L) - %m%n" />
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5p [%.10t][%X{CU}] %logger{36}[%L] - %m%n"/>
         </Console>
-
         <RollingRandomAccessFile name="ErrorLog"
                                  fileName="${LOG_HOME}/${ERROR_LOG_FILE_NAME}.log"
-                                 filePattern="${LOG_HOME}/${ERROR_LOG_FILE_NAME}.log.%d{yyyy-MM-dd}.gz">
-            <PatternLayout
-                    pattern="%d %-5p (%F:%L) - %m%n"/>
+                                 filePattern="${LOG_HOME}/${ERROR_LOG_FILE_NAME}.log.%d{yyyy-MM-dd}_%i.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5p [%.10t][%X{CU}] %logger{36}[%L] - %m%n"/>
             <Policies>
-                <TimeBasedTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
-
+        <RollingRandomAccessFile name="InfoLog"
+                                 fileName="${LOG_HOME}/${INFO_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${INFO_LOG_FILE_NAME}.log.%d{yyyy-MM-dd}_%i.tar.gz">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5p [%.10t][%X{CU}] %logger{36}[%L] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingRandomAccessFile>
     </Appenders>
 
     <Loggers>
-        <!-- 3rdparty Loggers -->
-        <logger name="org.springframework.core" level="info">
-        </logger>
-        <logger name="org.springframework.beans" level="info">
-        </logger>
-        <logger name="org.springframework.context" level="info">
-        </logger>
-        <logger name="org.springframework.web" level="info">
-        </logger>
-
-        <logger name="com.meituan.gct.shop.promo" level="error" includeLocation="true" additivity="false">
+        <Root level="${LOG_LEVEL}" includeLocation="true">
+            <appender-ref ref="Console"/>
             <appender-ref ref="ErrorLog"/>
-            <appender-ref ref="Console"/>
-        </logger>
-
-        <root level="info" includeLocation="true">
-            <appender-ref ref="Console"/>
-        </root>
+            <appender-ref ref="InfoLog"/>
+        </Root>
     </Loggers>
 </Configuration>

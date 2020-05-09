@@ -86,7 +86,7 @@ public class OutputFactory {
                 while (true) {
                     if (!priorityFail()) {
                         event = this.outputQueue.take();
-                        if (event != null && event.size() != 0) {
+                        if (event != null && !event.isEmpty()) {
                             for (Output bo : outputProcessors) {
                                 bo.process(event);
                             }
