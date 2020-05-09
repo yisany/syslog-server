@@ -42,11 +42,17 @@ public class SyslogMessageParser {
         Map<String, Object> parseMap = new HashMap<>();
         String message = event.get("message").toString();
         // 只有当协议为rfc_3164/rfc5424时, 才需要解析字段
-        if (SyslogProtocolEnum.RFC_3164.equals(proto)) {
-            parseMap = parser3164.parseLine(message);
-        } else if (SyslogProtocolEnum.RFC_5424.equals(proto)) {
-            parseMap = parser5424.parseLine(message);
+        try {
+            if (SyslogProtocolEnum.RFC_3164.equals(proto)) {
+                parseMap = parser3164.parseLine(message);
+            } else if (SyslogProtocolEnum.RFC_5424.equals(proto)) {
+                parseMap = parser5424.parseLine(message);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("parser error, maybe message is null, message={}", message);
+            event.clear();
         }
+
         event.putAll(parseMap);
     }
 

@@ -20,6 +20,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.*;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -239,6 +240,10 @@ public class SyslogInput implements Input {
     }
 
     private void process(String ip, int port, String message) {
+        if (StringUtils.isBlank(message)) {
+            logger.error("message is null, ip={}, port={}, message={}", ip, port, message);
+            return;
+        }
         Map<String, Object> event = new HashMap() {{
             put("local_ip", ip);
             put("local_port", port);
