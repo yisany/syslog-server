@@ -1,36 +1,43 @@
-# Syslog日志接收服务器
+# Syslog Server
 
-该项目有三种协议可供选择：
+该项目实现了一个syslog日志服务器, 可以接收服务器和网络设备以syslog服务发送的日志信息,并可以将日志进行解析后进行数据的转发.
 
-- UDP
-- TCP
-- TLS (使用自签名证书) 
+目前支持三种协议：
 
-udp监听9897端口，tcp监听9898端口，tls监听9899端口
+> UDP, TCP, TLS (使用自签名证书) 
 
-<br>
+解析协议:
 
-## UPDATE
+> RFC_5424, RFC_3164, UNKNOWN(不解析, 原文发送)
 
-v3_20200107:
+转发方式:
 
-1. 去除`syslog4j`模组
-2. 配置文件从properties改为yaml, 协议接收端口可配
-3. 输出端提供文件落盘和kafka导出两种方式
+>stdout(控制台打印), file(文件落盘), kafka
 
 <br>
 
-## 使用方法
+## Usage
 
 使用maven打包成jar包，然后运行：
 
 ```
-java -jar simple-syslog-server.jar -c /tmp/application.yaml
+mvn clean package -Dmaven.test.skip=true
+java -jar syslog-server.jar -c /tmp/application.yaml
 ```
 
 <br>
 
-## 发送方配置 Client
+## Server config
+
+启动支持参数
+
+```
+-c	配置文件 yaml格式路径
+```
+
+<br>
+
+## Client config
 
 ### 自动脚本配置
 
@@ -60,11 +67,10 @@ URL_PEM=
 - 编辑文件
 
   ```bash
-  $template UniqueFormat,"unique %syslogpriority% %timestamp% %hostname% %syslogtag% %msg%
   # ip为服务端ip，确保两台机器可以ping通
   # udp为一个@，tcp为两个@
-  #*.*  @ip:9898;UniqueFormat
-  *.*  @@ip:9898;UniqueFormat
+  #*.*  @ip:9898
+  *.*  @@ip:9898
   ```
 
 ### tls
@@ -100,8 +106,7 @@ tls需要完成一下几个步骤：
    $ActionSendStreamDriverAuthMode anon
    $ActionSendStreamDriverMode 1
    
-   $template myFormat,"unique %syslogpriority% %timestamp% %hostname% %syslogtag% %msg%"
-   *.* @@ip:9898;myFormat
+   *.* @@ip:9898
    ```
 
 最后手动重启`rsyslog`服务:
@@ -109,6 +114,29 @@ tls需要完成一下几个步骤：
 ```
 systemctl restart rsyslog
 ```
+
+<br>
+
+## UPDATE
+
+20200511:
+
+分支: `dev_v3.1.1`
+
+更新功能:
+
+1. 新增解析模块, 支持`RFC_5424`, `RFC_3164`, `UNKNOWN`三种模式解析日志
+2. 更改数据传输队列, 使用队列集合, 每个队列对应一组处理器, 接收队列和发送队列分离, 避免生产消费吞吐量不一致导致卡死的问题.
+3. 定制input, output模板, 需要新增接收/发送器只需要实现相关接口即可
+   - com.yis.syslog.input.Input
+   - com.yis.syslog.output.Output
+4. 发送器目前支持: `file`, `kafka2.3.0`, `stdout`
+
+20200107:
+
+1. 去除`syslog4j`模组
+2. 配置文件从properties改为yaml, 协议接收端口可配
+3. 输出端提供文件落盘和kafka导出两种方式
 
 <br>
 

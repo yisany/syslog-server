@@ -88,15 +88,15 @@ public class SyslogInput implements Input {
     public void emit() {
         switch (protocol) {
             case UDP:
-                logger.info("Syslog_UDP_Monitor is running...");
+                logger.info("Syslog_UDP_Monitor is running, port={}...", port);
                 udp(port);
                 break;
             case TCP:
-                logger.info("Syslog_TCP_Monitor is running...");
+                logger.info("Syslog_TCP_Monitor is running, port={}...", port);
                 tcp(port);
                 break;
             case TLS:
-                logger.info("Syslog_TLS_Monitor is running...");
+                logger.info("Syslog_TLS_Monitor is running, port={}...", port);
                 tls(port, context);
                 break;
             default:

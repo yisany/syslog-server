@@ -1,6 +1,6 @@
-### 端口设置
 input:
   port:
+    ### 监听端口设置
     udp: 9897
     tcp: 9898
     tls: 9899
@@ -8,7 +8,6 @@ filter:
   # 可选值为: RFC_5424, RFC_3164, UNKNOWN
   protocol: RFC_5424
 ### 导出设置
-### file,kafka可以选其一, 也可以都用
 ### 用哪个就写哪个, 不用的就可以不写
 output:
   stdout:

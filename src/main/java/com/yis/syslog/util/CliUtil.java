@@ -49,7 +49,7 @@ public class CliUtil {
             }
             return comms;
         } catch (ParseException e) {
-            logger.error("parseOption parse error:{}", e);
+            logger.error("parseOption parse error:{}", e.getMessage());
             throw new BizException("命令行解析失败, 缺少必要参数");
         }
     }
