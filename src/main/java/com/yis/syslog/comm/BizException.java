@@ -1,4 +1,4 @@
-package com.yis.syslog.util;
+package com.yis.syslog.comm;
 
 /**
  * @author milu

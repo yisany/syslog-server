@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.yis.syslog.util;
+package com.yis.syslog.comm;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.CertificateException;

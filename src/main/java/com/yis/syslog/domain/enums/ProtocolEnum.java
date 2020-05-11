@@ -8,6 +8,6 @@ package com.yis.syslog.domain.enums;
  */
 public enum ProtocolEnum {
 
-    UDP, TCP, TLS;
+    UDP, TCP, TLS
 
 }

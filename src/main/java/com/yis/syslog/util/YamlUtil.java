@@ -1,5 +1,6 @@
 package com.yis.syslog.util;
 
+import com.yis.syslog.comm.BizException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;

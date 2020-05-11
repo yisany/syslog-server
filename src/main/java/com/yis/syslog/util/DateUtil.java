@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 时间处理工具类
@@ -31,9 +33,10 @@ public class DateUtil {
         String YYYYMMDDHHMMSSSSS = "yyyyMMddHHmmssSSS";
         String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
         String YYYY_MM_DD_HH_MM_SS_SSS = "yyyy-MM-dd HH:mm:ss.SSS";
-        String UTC = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-        String ES = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+        String YYYY_MM_DD_T_HH_MM_SS_SSS = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     }
+
+    private static Map<String, DateTimeFormatter> formatterMap = new ConcurrentHashMap<>();
 
     /**
      * 获取日期
@@ -52,7 +55,14 @@ public class DateUtil {
      */
     public static String getTimeNow() {
         LocalDateTime arrivalDate = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DatePattern.YYYY_MM_DD_HH_MM_SS_SSS);
+        String pattern = DatePattern.YYYY_MM_DD_T_HH_MM_SS_SSS;
+        DateTimeFormatter formatter;
+        if (formatterMap.containsKey(pattern)) {
+            formatter = formatterMap.get(pattern);
+        } else {
+            formatter = DateTimeFormatter.ofPattern(pattern);
+            formatterMap.put(pattern, formatter);
+        }
         return arrivalDate.format(formatter);
     }
 
@@ -184,10 +194,10 @@ public class DateUtil {
     }
 
     /**
-     * 13位时间戳 -> yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+     * 13位时间戳 -> yyyy-MM-dd'T'HH:mm:ss.SSS
      */
-    public static String getUTC(Long timestamp) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static String getLocalTime(Long timestamp) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         Date date = new Date(timestamp);
         return format.format(date);
     }

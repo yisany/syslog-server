@@ -1,7 +1,5 @@
 package com.yis.syslog;
 
-import com.yis.syslog.comm.ParseOption;
-import com.yis.syslog.handler.BaseHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,11 +13,10 @@ public class Syslog {
     private static Logger logger = LogManager.getLogger(Syslog.class);
 
     public static void main(String[] args){
-        logger.info("=====    Syslog InputHandler Check    =====");
-        ParseOption.initConfig(args);
-        logger.info("=====  Syslog InputHandler Check over =====");
-        BaseHandler handler = new BaseHandler();
-        handler.start();
+        logger.info("=====    Syslog SyslogInput Check    =====");
+        OptionsProcessor.getInstance().initConfig(args);
+        logger.info("=====  Syslog SyslogInput Check over =====");
+        AssemblyPipeline.getInstance().start();
     }
 
 }
