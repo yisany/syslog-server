@@ -32,7 +32,7 @@ java -jar syslog-server.jar -c /tmp/application.yaml
 启动支持参数
 
 ```
--c	配置文件 yaml格式路径
+-f	配置文件 yaml格式路径
 ```
 
 <br>

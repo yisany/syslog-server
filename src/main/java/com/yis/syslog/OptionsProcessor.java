@@ -4,6 +4,7 @@ import com.yis.syslog.domain.InputOptions;
 import com.yis.syslog.domain.enums.SyslogProtocolEnum;
 import com.yis.syslog.util.CliUtil;
 import com.yis.syslog.util.YamlUtil;
+import org.apache.commons.cli.CommandLine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,6 +27,7 @@ public class OptionsProcessor {
 
     private static OptionsProcessor processor;
 
+    private CommandLine comms;
     private Map<String, Object> configs = new ConcurrentHashMap<>();
 
     public static OptionsProcessor getInstance() {
@@ -88,10 +90,8 @@ public class OptionsProcessor {
      */
     public void initConfig(String[] args) {
         logger.info("Checking config...");
-        // 获取配置文件地址
-        Map<String, String> comms = CliUtil.parseCli(args, "c");
-        // 初始化配置
-        configs = YamlUtil.parseYaml(comms.get("c"));
+        comms = CliUtil.parseArgs(args);
+        configs = YamlUtil.parseYaml(comms.getOptionValue("f"));
     }
 
 }
