@@ -1,4 +1,4 @@
-package com.yis.syslog.output.impl.kafka;
+package com.yis.syslog.output.outputs.kafka;
 
 import com.alibaba.fastjson.JSON;
 import com.yis.syslog.comm.BizException;
@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 
 /**
  * @author milu

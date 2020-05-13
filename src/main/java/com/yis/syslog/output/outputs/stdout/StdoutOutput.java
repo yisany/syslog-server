@@ -1,4 +1,4 @@
-package com.yis.syslog.output.impl.stdout;
+package com.yis.syslog.output.outputs.stdout;
 
 import com.alibaba.fastjson.JSON;
 import com.yis.syslog.output.Output;

@@ -1,6 +1,5 @@
-package com.yis.syslog.output.impl.kafka;
+package com.yis.syslog.output.outputs.kafka;
 
-import com.yis.syslog.util.ThreadPool;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -8,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class JKafkaProducer {

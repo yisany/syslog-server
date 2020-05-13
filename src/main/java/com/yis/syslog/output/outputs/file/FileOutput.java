@@ -1,4 +1,4 @@
-package com.yis.syslog.output.impl.file;
+package com.yis.syslog.output.outputs.file;
 
 import com.alibaba.fastjson.JSON;
 import com.yis.syslog.domain.OutputOptions;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author milu
@@ -30,19 +31,20 @@ public class FileOutput implements Output {
     // 系统换行符
     public static final String LINE_BREAK = System.getProperty("line.separator");
 
+    private String path;
+
     private String lineBreak;
-    private String dir;
     private FileOutputStream fos = null;
     private FileChannel oChannel = null;
     private ByteBuffer buf = null;
     private boolean isFirst;
 
     public FileOutput(OutputOptions.FileOption option) {
-        this.dir = option.getPath();
+        this.path = option.getPath();
+
         this.isFirst = true;
         this.lineBreak = LINE_BREAK;
     }
-
 
     @Override
     public void prepare() {
@@ -72,7 +74,7 @@ public class FileOutput implements Output {
             if (isFirst) {
                 buf = ByteBuffer.allocate(BUFFER_SIZE);
 
-                File fileTemp = new File(dir);
+                File fileTemp = new File(path);
                 // 判断父文件夹是否存在
                 File parent = fileTemp.getParentFile();
                 if (!parent.exists()) {
@@ -83,7 +85,7 @@ public class FileOutput implements Output {
                     fileTemp.createNewFile();
                 }
 
-                fos = new FileOutputStream(dir, FILE_APPEND);
+                fos = new FileOutputStream(path, FILE_APPEND);
 
                 isFirst = false;
             }
