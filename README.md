@@ -119,6 +119,14 @@ systemctl restart rsyslog
 
 ## UPDATE
 
+20200518:
+
+更新内容:
+
+1. input, output队列数量可配
+2. 反射方式初始化Output模块组件, 实现Output接口需要实现其**空构造函数**
+
+
 20200511:
 
 分支: `dev_v3.1.1`

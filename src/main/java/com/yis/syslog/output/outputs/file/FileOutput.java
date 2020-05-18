@@ -1,6 +1,7 @@
 package com.yis.syslog.output.outputs.file;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Throwables;
 import com.yis.syslog.domain.OutputOptions;
 import com.yis.syslog.output.Output;
 import com.yis.syslog.comm.BizException;
@@ -39,15 +40,28 @@ public class FileOutput implements Output {
     private ByteBuffer buf = null;
     private boolean isFirst;
 
-    public FileOutput(OutputOptions.FileOption option) {
-        this.path = option.getPath();
+    public FileOutput() {
 
-        this.isFirst = true;
-        this.lineBreak = LINE_BREAK;
     }
 
     @Override
     public void prepare() {
+        this.isFirst = true;
+        this.lineBreak = LINE_BREAK;
+        try {
+            File fileTemp = new File(path);
+            // 判断父文件夹是否存在
+            File parent = fileTemp.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+            // 判断要写入文件是否存在
+            if (!fileTemp.exists()) {
+                fileTemp.createNewFile();
+            }
+        } catch (IOException e) {
+            logger.error("create file error, e={}", Throwables.getStackTraceAsString(e));
+        }
 
     }
 
@@ -73,17 +87,6 @@ public class FileOutput implements Output {
         try {
             if (isFirst) {
                 buf = ByteBuffer.allocate(BUFFER_SIZE);
-
-                File fileTemp = new File(path);
-                // 判断父文件夹是否存在
-                File parent = fileTemp.getParentFile();
-                if (!parent.exists()) {
-                    parent.mkdirs();
-                }
-                // 判断要写入文件是否存在
-                if (!fileTemp.exists()) {
-                    fileTemp.createNewFile();
-                }
 
                 fos = new FileOutputStream(path, FILE_APPEND);
 

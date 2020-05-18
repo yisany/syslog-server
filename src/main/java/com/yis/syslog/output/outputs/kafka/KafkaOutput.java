@@ -25,26 +25,20 @@ public class KafkaOutput implements Output {
 
     private Properties props;
     private String bootstrapServers;
-    private Map<String, String> properties;
+    private Map<String, String> producerSettings;
     private String topic;
 
-    public KafkaOutput(OutputOptions.KafkaOption option) {
-        this.bootstrapServers = option.getBootstrapServers();
-        this.topic = option.getTopics();
-        this.properties = option.getProducerSettings();
-
-        prepare();
+    public KafkaOutput() {
     }
 
     @Override
     public void prepare() {
         try {
-
             if (props == null) {
                 props = new Properties();
                 props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
                 props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-                props.putAll(properties);
+                props.putAll(producerSettings);
             }
             props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             producer = JKafkaProducer.init(props);

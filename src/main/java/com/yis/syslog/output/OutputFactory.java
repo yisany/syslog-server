@@ -1,15 +1,19 @@
 package com.yis.syslog.output;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 import com.yis.syslog.OptionsProcessor;
+import com.yis.syslog.comm.InstanceFactory;
 import com.yis.syslog.domain.OutputOptions;
 import com.yis.syslog.domain.qlist.OutputQueueList;
-import com.yis.syslog.output.impl.file.FileOutput;
-import com.yis.syslog.output.impl.kafka.KafkaOutput;
-import com.yis.syslog.output.impl.stdout.StdoutOutput;
+import com.yis.syslog.output.outputs.file.FileOutput;
+import com.yis.syslog.output.outputs.kafka.KafkaOutput;
+import com.yis.syslog.output.outputs.stdout.StdoutOutput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +24,13 @@ import java.util.concurrent.Executors;
 /**
  * @author by yisany on 2020/05/08
  */
-public class OutputFactory {
+public class OutputFactory extends InstanceFactory {
 
     private static final Logger logger = LogManager.getLogger(OutputFactory.class);
+
+    private final static String PLUGINTYPE = "output";
+
+    private static Map<String,Class<?>> outputsClassLoader = Maps.newConcurrentMap();
 
     public static void initOutputInstances(OutputQueueList outputQueueList, List<Output> allBaseOutputs) {
         // 获取输出对象
@@ -32,35 +40,40 @@ public class OutputFactory {
         }
     }
 
+    private static Output getInstance(Map<String, Object> outputConfig, Class<?> outputClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Constructor<?> ctor = outputClass.getConstructor();
+
+        Output baseOutput = (Output) ctor.newInstance();
+        configInstance(baseOutput,outputConfig);//设置非static field
+        baseOutput.prepare();
+
+        return baseOutput;
+    }
+
     private static List<Output> getBatchInstance(Map<String, Object> outputConfig) {
         List<Output> outputs = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : outputConfig.entrySet()) {
-            String module = entry.getKey();
-            Map<String, Object> conf = (Map<String, Object>) entry.getValue();
-            switch (module) {
-                case "stdout":
-                    logger.info("output module:[stdout] is working");
-                    StdoutOutput stdoutSender = new StdoutOutput();
-                    outputs.add(stdoutSender);
-                    break;
-                case "file":
-                    logger.info("output module:[file] is working");
-                    OutputOptions.FileOption file = new OutputOptions.FileOption();
-                    file.convert(conf, file);
-                    FileOutput fileSender = new FileOutput(file);
-                    outputs.add(fileSender);
-                    break;
-                case "kafka":
-                    logger.info("output module:[kafka] is working");
-                    OutputOptions.KafkaOption kafka = new OutputOptions.KafkaOption();
-                    kafka.convert(conf, kafka);
-                    KafkaOutput kafkaSender = new KafkaOutput(kafka);
-                    outputs.add(kafkaSender);
-                    break;
-                default:
-                    break;
+
+        int index = 0;
+        try {
+            for (Map.Entry<String, Object> outputEntry : outputConfig.entrySet()) {
+                String outputType = outputEntry.getKey();
+                Map oConfig = (Map) outputEntry.getValue();
+                String className = getClassName(outputType, PLUGINTYPE);
+                String key = String.format("%s%d", className, index++);
+                Class<?> oClass = outputsClassLoader.get(key);
+                if (oClass == null) {
+                    oClass = getPluginClass(className);
+                    outputsClassLoader.put(key, oClass);
+                }
+                if (oConfig == null) {
+                    oConfig = Maps.newLinkedHashMap();
+                }
+                outputs.add(getInstance(oConfig, oClass));
             }
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            logger.error("output factory getBatchInstance error, e={}", Throwables.getStackTraceAsString(e));
         }
+
         return outputs;
     }
 
