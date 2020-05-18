@@ -54,9 +54,15 @@ public class AssemblyPipeline {
 
         // 初始化队列
         logger.info("initInputQueueList start ...");
-        initInputQueueList = InputQueueList.getInputQueueListInstance(1, 10000);
+        initInputQueueList = InputQueueList.getInputQueueListInstance(
+                OptionsProcessor.getInstance().getInitInputWork(),
+                10000
+        );
         logger.info("initOutputQueueList start ...");
-        initOutputQueueList = OutputQueueList.getOutPutQueueListInstance(1, 10000);
+        initOutputQueueList = OutputQueueList.getOutPutQueueListInstance(
+                OptionsProcessor.getInstance().getInitOutputWork(),
+                10000
+        );
 
         InputFactory.initInputInstances(initInputQueueList, allBaseInputs);
         FilterFactory.initFilterInstances(initInputQueueList, initOutputQueueList);
