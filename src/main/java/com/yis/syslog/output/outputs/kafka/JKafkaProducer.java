@@ -14,7 +14,7 @@ public class JKafkaProducer {
     private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>(100);
     private KafkaProducer<String, String> producer;
 
-    public JKafkaProducer(Properties props) {
+    private JKafkaProducer(Properties props) {
         this.producer = new KafkaProducer<>(props);
     }
 
@@ -39,7 +39,7 @@ public class JKafkaProducer {
         return init(props);
     }
 
-    public void sendWithRetry(String topic, String key, String value) {
+    void sendWithRetry(String topic, String key, String value) {
         while (!this.queue.isEmpty()) {
             this.sendWithBlock(topic, key, this.queue.poll());
         }
@@ -47,7 +47,7 @@ public class JKafkaProducer {
         this.sendWithBlock(topic, key, value);
     }
 
-    public void sendWithBlock(String topic, String key, final String value) {
+    private void sendWithBlock(String topic, String key, final String value) {
         if (value != null) {
             ProducerRecord pr = StringUtils.isBlank(key) ? new ProducerRecord(topic, value) : new ProducerRecord(topic, key, value);
             this.producer.send(pr, (metadata, exception) -> {

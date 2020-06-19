@@ -53,11 +53,17 @@ public class FileOutput implements Output {
             // 判断父文件夹是否存在
             File parent = fileTemp.getParentFile();
             if (!parent.exists()) {
-                parent.mkdirs();
+                boolean b = parent.mkdirs();
+                if (!b) {
+                    logger.error("create folder error, folder={}", fileTemp.getParentFile().getAbsolutePath());
+                }
             }
             // 判断要写入文件是否存在
             if (!fileTemp.exists()) {
-                fileTemp.createNewFile();
+                boolean n = fileTemp.createNewFile();
+                if (!n) {
+                    logger.error("create file error, file={}", fileTemp.getAbsoluteFile().getAbsolutePath());
+                }
             }
         } catch (IOException e) {
             logger.error("create file error, e={}", Throwables.getStackTraceAsString(e));
@@ -71,7 +77,7 @@ public class FileOutput implements Output {
             fos.close();
             oChannel.close();
         } catch (IOException e) {
-            logger.error("FileOutput release error, e={}", e);
+            logger.error("FileOutput release error, e={}", Throwables.getStackTraceAsString(e));
             throw new BizException("关闭File输出失败");
         }
     }
@@ -106,7 +112,7 @@ public class FileOutput implements Output {
             // buf压缩
             buf.compact();
         } catch (IOException e) {
-            logger.error("FileOutput appendLog error, e={}", e);
+            logger.error("FileOutput appendLog error, e={}", Throwables.getStackTraceAsString(e));
         }
     }
 

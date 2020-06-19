@@ -25,7 +25,7 @@ public class InputFactory {
         SyslogInput.setInputQueueList(initInputQueueList);
         InputOptions ic = OptionsProcessor.getInstance().getInputConfig();
 
-        InputThread.initInputThread(new HashMap(){{
+        InputThread.initInputThread(new HashMap<ProtocolEnum, Integer>(){{
             put(ProtocolEnum.UDP, ic.getUdp());
             put(ProtocolEnum.TCP, ic.getTcp());
             put(ProtocolEnum.TLS, ic.getTls());
@@ -38,7 +38,7 @@ public class InputFactory {
 
         private SyslogInput input;
 
-        public InputThread(SyslogInput input) {
+        InputThread(SyslogInput input) {
             this.input = input;
         }
 
@@ -53,7 +53,7 @@ public class InputFactory {
             }
         }
 
-        public static void initInputThread(Map<ProtocolEnum, Integer> inputs, List<Input> allBaseInputs) {
+        static void initInputThread(Map<ProtocolEnum, Integer> inputs, List<Input> allBaseInputs) {
             if (inputExecutor == null) {
                 inputExecutor = Executors.newFixedThreadPool(inputs.size());
             }

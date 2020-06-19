@@ -1,9 +1,10 @@
 package com.yis.syslog.input.inputs;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
 import com.yis.syslog.domain.enums.ProtocolEnum;
 import com.yis.syslog.domain.qlist.InputQueueList;
 import com.yis.syslog.input.Input;
-import com.yis.syslog.util.DateUtil;
 import com.yis.syslog.comm.TrustEveryoneTrustManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -23,6 +24,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -120,8 +123,6 @@ public class SyslogInput implements Input {
 
     /**
      * tls证书认证
-     *
-     * @return
      */
     private SSLContext getSslContext() {
         try {
@@ -137,36 +138,36 @@ public class SyslogInput implements Input {
             } finally {
                 IOUtils.closeQuietly(is);
             }
-            // 创建jkd密钥访问库    123456是keystore密码
             final KeyManagerFactory keyManagerFactory = KeyManagerFactory.
                     getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keyStore, keystorePwd);
 
-            // 构造SSL环境，指定SSL版本为TLS
             sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory.getKeyManagers(),
                     new TrustManager[]{new TrustEveryoneTrustManager()}, null);
         } catch (Exception e) {
-            logger.error("SyslogInput.getSslContext warning, e={}", e);
+            logger.error("SyslogInput.getSslContext warning, e={}", Throwables.getStackTraceAsString(e));
         }
         return sslContext;
     }
 
     /**
      * udp
-     *
-     * @param port
      */
     private void udp(int port) {
         group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
-            b.group(group);
-            b.channel(NioDatagramChannel.class);
-            b.handler(new UDPMessageHandler());
-            b.bind(port).sync().channel().closeFuture().await();
+            b.group(group)
+                    .channel(NioDatagramChannel.class)
+                    .handler(new UDPMessageHandler())
+                    .bind(port)
+                    .sync()
+                    .channel()
+                    .closeFuture()
+                    .await();
         } catch (InterruptedException e) {
-            logger.error("SyslogInput.udp warning, e={}", e);
+            logger.error("SyslogInput.udp warning, e={}", Throwables.getStackTraceAsString(e));
         } finally {
             group.shutdownGracefully();
         }
@@ -174,8 +175,6 @@ public class SyslogInput implements Input {
 
     /**
      * tcp
-     *
-     * @param port
      */
     private void tcp(int port) {
         bossGroup = new NioEventLoopGroup();
@@ -186,7 +185,7 @@ public class SyslogInput implements Input {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
                             ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
                             ch.pipeline().addLast(new StringDecoder());
                             ch.pipeline().addLast(new TCPMessageHandler());
@@ -197,7 +196,7 @@ public class SyslogInput implements Input {
             ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("SyslogInput.tcp warning, e={}", e);
+            logger.error("SyslogInput.tcp warning, e={}", Throwables.getStackTraceAsString(e));
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
@@ -207,7 +206,6 @@ public class SyslogInput implements Input {
     /**
      * tls
      *
-     * @param port
      */
     private void tls(int port, JdkSslContext context) {
         bossGroup = new NioEventLoopGroup();
@@ -219,7 +217,7 @@ public class SyslogInput implements Input {
                     .handler(new LoggingHandler(LogLevel.DEBUG))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
                             SSLEngine sslEngine = context.newEngine(ch.alloc());
                             ch.pipeline().addFirst("ssl", new SslHandler(sslEngine));
 
@@ -232,7 +230,7 @@ public class SyslogInput implements Input {
             ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("SyslogInput.tls warning, e={}", e);
+            logger.error("SyslogInput.tls warning, e={}", Throwables.getStackTraceAsString(e));
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
@@ -244,13 +242,14 @@ public class SyslogInput implements Input {
             logger.error("message is null, ip={}, port={}, message={}", ip, port, message);
             return;
         }
-        Map<String, Object> event = new HashMap() {{
+
+        Map<String, Object> event = new HashMap<String, Object>() {{
             put("local_ip", ip);
             put("local_port", port);
             put("message", message);
-            put("@timestamp", DateUtil.getTimeNow());
+            put("@timestamp", DateTime.now(DateTimeZone.UTC).toString());
         }};
-        if (event != null && event.size() > 0) {
+        if (event.size() > 0) {
             inputQueueList.put(event);
         }
     }
@@ -265,14 +264,15 @@ public class SyslogInput implements Input {
         }
     }
 
+    @ChannelHandler.Sharable
     class UDPMessageHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
         @Override
-        protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket body) throws Exception {
+        protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket body) {
             ByteBuf buf = body.copy().content();
             byte[] req = new byte[buf.readableBytes()];
             buf.readBytes(req);
-            String message = new String(req, "UTF-8");
+            String message = new String(req, Charsets.UTF_8);
             process(body.sender().getAddress().getHostAddress(), body.sender().getPort(), message);
         }
     }

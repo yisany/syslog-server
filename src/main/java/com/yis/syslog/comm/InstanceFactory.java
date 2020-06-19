@@ -54,7 +54,7 @@ public class InstanceFactory {
         if (StringUtils.isBlank(name)) {
             return null;
         }
-        if (name.indexOf(point) >= 0) {
+        if (name.contains(point)) {
             return name;
         }
         return getSystemProperty(key) + point + name.toLowerCase() + point + getNameNotation(name, key);

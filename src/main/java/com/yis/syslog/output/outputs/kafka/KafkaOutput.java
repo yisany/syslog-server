@@ -2,7 +2,6 @@ package com.yis.syslog.output.outputs.kafka;
 
 import com.alibaba.fastjson.JSON;
 import com.yis.syslog.comm.BizException;
-import com.yis.syslog.domain.OutputOptions;
 import com.yis.syslog.output.Output;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
