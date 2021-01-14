@@ -12,6 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.version>4.13.1</junit.version>
         <kafka.version>2.3.0</kafka.version>
         <log4j2.version>2.13.2</log4j2.version>
         <commons.cli.version>1.4</commons.cli.version>
@@ -51,7 +52,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- netty -->
@@ -120,12 +121,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.palindromicity</groupId>
-            <artifactId>simple-syslog</artifactId>
-            <version>${simple.syslog.version}</version>
         </dependency>
 
         <dependency>
