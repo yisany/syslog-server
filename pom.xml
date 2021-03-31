@@ -23,7 +23,7 @@
         <lombok.version>1.16.6</lombok.version>
         <orika.version>1.5.2</orika.version>
         <snakeyaml.version>1.24</snakeyaml.version>
-        <guava.version>27.0.1-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <simple.syslog.version>0.0.3</simple.syslog.version>
         <joda.version>2.10.6</joda.version>
     </properties>
