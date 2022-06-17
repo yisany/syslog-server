@@ -19,7 +19,7 @@
         <commons.lang.version>3.8.1</commons.lang.version>
         <commons.io.version>2.4</commons.io.version>
         <netty-all.version>4.1.42.Final</netty-all.version>
-        <fastjson.version>1.2.58</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <lombok.version>1.16.6</lombok.version>
         <orika.version>1.5.2</orika.version>
         <snakeyaml.version>1.24</snakeyaml.version>
